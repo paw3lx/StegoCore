@@ -3,5 +3,9 @@
         "src/StegoCoreLib",
         "src/StegoCoreWeb",
         "tests"
-    ]
+    ],
+    "sdk": {
+        "version": "1.0.3"
+    }
+
 }
