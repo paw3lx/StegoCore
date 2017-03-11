@@ -1,7 +1,7 @@
 # StegeCore - steganography library and web app
 
 
-More info about this project on  https//pawelskaruz.pl
+More info about this project on  https://pawelskaruz.pl
 
 ## How to start web app?
 
