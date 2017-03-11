@@ -1,4 +1,4 @@
-
+initializeUploader = function(){
 $(function() {
   Dropzone.options.uploaddropzone = {
   paramName: "file", 
@@ -29,3 +29,7 @@ $(function() {
   }
   };
 });
+
+}
+
+initializeUploader();
