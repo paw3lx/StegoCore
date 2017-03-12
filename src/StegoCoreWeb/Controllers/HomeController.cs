@@ -36,7 +36,6 @@ namespace StegoCoreWeb.Controllers
             return View();
         }
 
-        [HttpPost]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Upload(IFormFile file)
@@ -56,7 +55,7 @@ namespace StegoCoreWeb.Controllers
                 }
                 HttpContext.Session.Set<UserImage>(nameof(UserImage), userImage);    
             }
-            return Json(uploads);
+            return Json("ok");
         }
 
         public IActionResult ShowImage()
