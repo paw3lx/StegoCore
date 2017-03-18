@@ -81,7 +81,7 @@ namespace StegoCoreWeb.Controllers
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             if (userImage != null)
             {
-                var filePath = Path.Combine(_environment.WebRootPath, "uploads", userImage.Guid);
+                var filePath = Path.Combine(_environment.WebRootPath, "uploads", userImage.Guid);           
                 if (System.IO.File.Exists(filePath))
                     System.IO.File.Delete(filePath);
                 HttpContext.Session.Remove(nameof(UserImage));
