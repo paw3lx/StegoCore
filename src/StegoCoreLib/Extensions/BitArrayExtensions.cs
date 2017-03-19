@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace StegoCoreLib.Extensions
+namespace StegoCore.Extensions
 {
     public static class BitArrayExtensions
     {

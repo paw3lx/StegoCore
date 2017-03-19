@@ -1,6 +1,5 @@
 namespace StegoCore.Core
 {
-    using System.Collections;
     using System.IO;
     using ImageSharp;
 
@@ -42,19 +41,19 @@ namespace StegoCore.Core
                 buffer = new byte[fs.Length];
                 fs.Read(buffer, 0, (int)fs.Length);
             }
-            this.secretDataBits = new BitArray(buffer);
+            this.secretData = new SecretData(buffer);
         }
 
         protected void LoadSecretData(Stream stream)
         {
             byte[] buffer = null;
             stream.Read(buffer, 0, (int) stream.Length);
-            this.secretDataBits = new BitArray(buffer);
+            this.secretData = new SecretData(buffer);
         }
 
         protected void LoadSecretData(byte[] bytes)
         {
-            this.secretDataBits = new BitArray(bytes);
+            this.secretData = new SecretData(bytes);
         }
 
 

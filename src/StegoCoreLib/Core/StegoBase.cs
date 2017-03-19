@@ -2,22 +2,18 @@ namespace StegoCore.Core
 {
     using System.Collections;
     using ImageSharp;
-    using StegoCoreLib.Extensions;
+    using StegoCore.Extensions;
 
     public abstract class StegoBase : IStegoEntry
     {
         protected Image image;
-        protected BitArray secretDataBits;
-        
-        /// <summary>
-        /// Get secret data representation in byte array
-        /// </summary>
-        /// <returns>Byte array</returns>
-        public byte[] SecretDataBytes => secretDataBits.ToByteArray();
+        protected SecretData secretData;
 
         public Image StegoImage => image;
 
         private bool disposedValue = false; 
+
+        public byte[] SecretDataBytes => secretData?.SecretBits?.ToByteArray();
 
         protected virtual void Dispose(bool disposing)
         {
@@ -26,7 +22,6 @@ namespace StegoCore.Core
                 if (disposing)
                 {
                     image?.Dispose();
-                    secretDataBits = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

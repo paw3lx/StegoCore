@@ -2,6 +2,8 @@ namespace StegoCore
 {
     using System.IO;
     using Core;
+    using StegoCore.Algorithms;
+    using StegoCore.Extensions;
 
     public sealed class Stego : StegoEntry
     {
@@ -54,6 +56,18 @@ namespace StegoCore
         public void SetSecretData(byte[] bytes)
         {
             base.LoadSecretData(bytes);
+        }
+
+        public ImageSharp.Image Embed(AlgorithmEnum algorithm)
+        {
+            var alg = AlgorithmFactory.Create(algorithm);
+            return alg.Embed(this.image, this.secretData);
+        }
+
+        public byte[] Decode(AlgorithmEnum algorithm, ImageSharp.Image stegoImage)
+        {
+            var alg = AlgorithmFactory.Create(algorithm);
+            return alg.Decode(stegoImage);
         }
 
     }
