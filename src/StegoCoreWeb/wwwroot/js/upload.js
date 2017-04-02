@@ -2,7 +2,7 @@ initializeUploader = function(){
 $(function() {
   Dropzone.options.uploaddropzone = {
   paramName: "file", 
-  maxFilesize: 1, 
+  maxFilesize: 10, 
   maxFiles : 1,
   previewTemplate: document.getElementById('preview-template').innerHTML,
   dictDefaultMessage: "Drop your file image here (1mb max)",

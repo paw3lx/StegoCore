@@ -10,6 +10,8 @@ namespace StegoCore.Algorithms
         byte[] Decode(Image stegoImage);
 
         int ReadSecretLength(Image stegoImage);
+
+        bool EmbedPossible(Image image, int secretLength);
          
     }
 
@@ -19,6 +21,7 @@ namespace StegoCore.Algorithms
 
         public abstract byte[] Decode(Image stegoImage);
         public abstract Image Embed(Image baseImage, SecretData secret);
+        public abstract bool EmbedPossible(Image image, int secretLength);
         public abstract int ReadSecretLength(Image stegoImage);
     }
 }

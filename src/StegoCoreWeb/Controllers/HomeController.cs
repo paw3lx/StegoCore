@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ImageSharp;
+using ImageSharp.Formats;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StegoCore;
+using StegoCore.Algorithms;
 using StegoCoreWeb.Extensions;
 using StegoCoreWeb.Model;
 
@@ -60,7 +63,11 @@ namespace StegoCoreWeb.Controllers
 
         public IActionResult ShowImage()
         {
-            return View();
+            var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
+            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            if (userImage == null || userImage.Guid == null || !System.IO.File.Exists(Path.Combine(uploads, userImage.Guid)))
+                return RedirectToAction("Index");
+            return View(userImage);
         }
 
         public IActionResult GetUserImage()
@@ -72,21 +79,87 @@ namespace StegoCoreWeb.Controllers
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.Guid));
                 return File(file, userImage.ContentType, userImage.FileName);
             }
-            return Unauthorized();
+            return StatusCode(404);
+        }
+
+        public IActionResult GetEmbededImage(string guid)
+        {
+            var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
+            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.EmbededGuid)))
+            {              
+                var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.EmbededGuid));
+                return File(file, "image/bmp", userImage.FileName);
+            }
+            return StatusCode(404);
         }
 
 
-        public IActionResult RemoveImage()
+        public IActionResult RemoveImage(string id)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            if (userImage != null)
+            if (userImage != null && userImage.IsUserImage(id))
             {
-                var filePath = Path.Combine(_environment.WebRootPath, "uploads", userImage.Guid);           
+                var filePath = Path.Combine(_environment.WebRootPath, "uploads", id);     
                 if (System.IO.File.Exists(filePath))
                     System.IO.File.Delete(filePath);
-                HttpContext.Session.Remove(nameof(UserImage));
+                
+                if (userImage.EmbededGuid == id)
+                    return RedirectToAction("ShowImage");
             }
             return RedirectToAction("Index");
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Embed(IFormFile secret)
+        {
+            var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
+            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var filePath = Path.Combine(uploads, userImage.Guid);
+            var embedResult = new EmbedResult();
+            if (secret != null && secret.Length > 0 && System.IO.File.Exists(filePath))
+            {
+                byte[] secretBytes = null;
+                using (var memoryStrem = new MemoryStream())
+                {
+                    await secret.CopyToAsync(memoryStrem);
+                    secretBytes = memoryStrem.ToArray();
+                }
+                using(var stego = new Stego(filePath))
+                {
+                    stego.SetSecretData(secretBytes);
+                    var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
+                    imageWithSecret.Save(Path.Combine(uploads, embedResult.Guid), new BmpFormat());
+                    embedResult.Success = true;
+                    userImage.EmbededGuid = embedResult.Guid;
+                }
+                HttpContext.Session.Set<UserImage>(nameof(UserImage), userImage);
+            }
+            else {
+                return Content("You have to select secret file to embed in image");
+
+            }
+            
+            return View(embedResult);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Decrypt(string id)
+        {
+            var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
+            var filePath = Path.Combine(_environment.WebRootPath, "uploads", id);
+            if (System.IO.File.Exists(filePath) && (userImage.Guid == id || userImage.EmbededGuid == id))
+            {
+                using(var stego = new Stego(filePath))
+                {
+                    var result = stego.Decode(AlgorithmEnum.Lsb);
+                    return File(result, "application/octet-stream", "secret");
+                }
+            }
+            return Content("Wrong id");
+            
         }
     }
 }

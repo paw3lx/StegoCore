@@ -70,5 +70,13 @@ namespace StegoCore
             return alg.Decode(stegoImage);
         }
 
+        public byte[] Decode(AlgorithmEnum algorithm)
+        {
+            if (this.image == null)
+                return null;
+            var alg = AlgorithmFactory.Create(algorithm);
+            return alg.Decode(this.image);
+        }
+
     }
 }

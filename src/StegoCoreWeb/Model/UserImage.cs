@@ -8,5 +8,12 @@ namespace StegoCoreWeb.Model
 
         public string Guid { get; set; }
         public string ContentType { get; set; }
+
+        public string EmbededGuid { get; set; }
+
+        public bool IsUserImage(string id)
+        {
+            return Guid == id || EmbededGuid == id;
+        }
     }
 }
