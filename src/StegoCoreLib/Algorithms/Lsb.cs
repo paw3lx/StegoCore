@@ -37,6 +37,9 @@ namespace StegoCore.Algorithms
         public override byte[] Decode(Image stegoImage)
         {
             int length  = ReadSecretLength(stegoImage) * 8;
+            if (length <= 0 || !EmbedPossible(stegoImage, length))
+                throw new InvalidDataException($"Cannot read secret from this image file. Readed secret length: {length}");
+
             BitArray bits = new BitArray(length);
             using(var pixels = stegoImage.Lock())
             {         

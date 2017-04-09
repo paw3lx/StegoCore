@@ -9,7 +9,7 @@ namespace StegoCoreTests
         }
         public static string GetPathToImage()
         {
-            var fileInfo = new System.IO.FileInfo("../../../files/lena_rgb.png");
+            var fileInfo = new System.IO.FileInfo("../../../files/lena.bmp");
             return fileInfo.FullName;
         }
 
