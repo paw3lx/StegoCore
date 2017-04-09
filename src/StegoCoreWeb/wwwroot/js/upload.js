@@ -5,7 +5,7 @@ $(function() {
   maxFilesize: 10, 
   maxFiles : 1,
   previewTemplate: document.getElementById('preview-template').innerHTML,
-  dictDefaultMessage: "Drop your file image here (1mb max)",
+  dictDefaultMessage: "Drop your file image here (10mb max)",
   acceptedFiles: "image/*",
   accept: function(file, done) {
     done();

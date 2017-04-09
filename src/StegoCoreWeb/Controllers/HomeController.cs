@@ -82,14 +82,15 @@ namespace StegoCoreWeb.Controllers
             return StatusCode(404);
         }
 
-        public IActionResult GetEmbededImage(string guid)
+        public IActionResult GetEmbededImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             var uploads = Path.Combine(_environment.WebRootPath, "uploads");
             if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.EmbededGuid)))
             {              
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.EmbededGuid));
-                return File(file, "image/bmp", userImage.FileName);
+                return File(file, "image/" + userImage.EmbededFormat, 
+                    Helpers.FileExtensionHelper.GetFileNameWithNewExtension(userImage.FileName, userImage.EmbededFormat));
             }
             return StatusCode(404);
         }
@@ -112,12 +113,15 @@ namespace StegoCoreWeb.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Embed(IFormFile secret)
+        public async Task<IActionResult> Embed(IFormFile secret, AlgorithmEnum algorithm, string format)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             var uploads = Path.Combine(_environment.WebRootPath, "uploads");
             var filePath = Path.Combine(uploads, userImage.Guid);
-            var embedResult = new EmbedResult();
+            var embedResult = new EmbedResult
+            {
+                Algorithm = algorithm
+            };
             if (secret != null && secret.Length > 0 && System.IO.File.Exists(filePath))
             {
                 byte[] secretBytes = null;
@@ -129,9 +133,10 @@ namespace StegoCoreWeb.Controllers
                 using(var stego = new Stego(filePath))
                 {
                     stego.SetSecretData(secretBytes);
-                    var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
-                    imageWithSecret.Save(Path.Combine(uploads, embedResult.Guid), new BmpFormat());
+                    var imageWithSecret = stego.Embed(algorithm);
+                    imageWithSecret.Save(Path.Combine(uploads, embedResult.Guid), Helpers.FormatHelper.GetFormatByName(format));
                     embedResult.Success = true;
+                    embedResult.Format = userImage.EmbededFormat = format;
                     userImage.EmbededGuid = embedResult.Guid;
                 }
                 HttpContext.Session.Set<UserImage>(nameof(UserImage), userImage);
@@ -146,7 +151,7 @@ namespace StegoCoreWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Decrypt(string id)
+        public IActionResult Decrypt(string id, AlgorithmEnum algorithm)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             var filePath = Path.Combine(_environment.WebRootPath, "uploads", id);

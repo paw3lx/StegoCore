@@ -2,18 +2,42 @@
 
 <h1 class="text-center text-info">What you want to do?</h1>
 <div class="row">
-    <div class="col-md-6 text-center">
-      
+    <div class="col-md-6 text-center">     
       <div class="panel panel-info">
           <div class="panel-heading"> <h3 class="panel-title">Embed secret data</h3> </div>
-  <div class="panel-body">
+            <div class="panel-body">
       
-      <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Embed" asp-antiforgery="true" id="form-secret-data">
-            <input name="secret" type="file" style="margin: 0 auto;" />
-            <button class="btn btn-primary btn-lg margin-top-10">Embed</button>
-      </form>
-  </div>
-</div>
+             <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Embed" asp-antiforgery="true" id="form-secret-data">
+                <div class="col-md-12">
+                    <label for="secret" class="col-md-3">Select your secret file</label>
+                    <div class="col-md-3">
+                        <input name="secret" type="file" style="margin: 0 auto;" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <label for="algorithm" class="col-md-3">Select algorithm</label>
+                    <div class="col-md-9">
+                        <select name="algorithm" class="form-control">             
+                            <option value="0">LSB</option>
+                        </select>
+                    </div>
+                
+                </div>
+                <div class="col-md-12">
+                    <label for="algorithm" class="col-md-3">Select output format</label>
+                    <div class="col-md-9">
+                        <select name="format" class="form-control">             
+                            <option value="bmp">Bmp</option>
+                            <option value="Png">Png</option>
+                            <option value="jpeg">Jpeg</option>
+                        </select>
+                    </div>
+                
+                </div>
+                <button class="btn btn-primary btn-lg margin-top-10">Embed</button>
+             </form>
+        </div>
+    </div>
       
   </div>
   <div class="col-md-6 text-center">
@@ -22,7 +46,16 @@
   <div class="panel-body">
       <form method="post" asp-controller="Home" asp-action="Decrypt" asp-antiforgery="true">
            <input type="hidden" name="id" value="@Model.Guid">
-            <button class="btn btn-primary btn-lg" type="submit">Decrypt</button>
+           <label for="algorithm" class="col-md-3">Select algorithm</label>
+           <div class=" col-md-9">
+               <select name="algorithm" class="form-control">             
+                    <option value="0">LSB</option>
+                </select>
+           </div>
+           <div class="col-md-12">
+               <button class="btn btn-primary btn-lg" type="submit">Decrypt</button>
+           </div>
+            
       </form>
   </div>
 </div>
