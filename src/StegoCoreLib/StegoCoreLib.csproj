@@ -8,6 +8,7 @@
     <PackageId>StegoCore</PackageId>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.0.3</RuntimeFrameworkVersion>
+    <RootNamespace>StegoCore</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
