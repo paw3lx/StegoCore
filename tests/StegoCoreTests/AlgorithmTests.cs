@@ -48,7 +48,7 @@ namespace StegoCoreTests
             
             EncryptAndSave(lsb, secretDataBytes, outFileName);
 
-            var stegoImage = new Image(outFileName);
+            var stegoImage = Image.Load(outFileName);
             byte[] resultSecret = lsb.Decode(stegoImage);
 
             Assert.Equal(secretDataBytes, resultSecret);
@@ -60,7 +60,7 @@ namespace StegoCoreTests
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
-            var imageWithSecret = lsb.Embed(new Image(FileHelper.GetPathToImage()), secretData);
+            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
             int readedLength = lsb.ReadSecretLength(imageWithSecret);
 
             Assert.Equal(secretDataBytes.Length, readedLength);
@@ -70,7 +70,7 @@ namespace StegoCoreTests
         private void EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
             var secretData = new SecretData(secretDataBytes);
-            var result = algorithm.Embed(new Image(FileHelper.GetPathToImage()), secretData);
+            var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
             result.Save(fileName);
         }
     }

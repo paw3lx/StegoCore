@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImageSharp" Version="1.0.0-alpha2-00158" />
+    <PackageReference Include="ImageSharp" Version="1.0.0-alpha7-00036" />
     <!--<PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha2-00158" />
-    <PackageReference Include="ImageSharp.Formats.Gif" Version="1.0.0-alpha2-00139" />-->
+    <PackageReference Include="ImageSharp.Formats.Gif" Version="1.0.0-alpha2-00139" />
     <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-alpha2-00154	" />
     <PackageReference Include="ImageSharp.Formats.Bmp" Version="1.0.0-alpha2-00158" />  
     <PackageReference Include="ImageSharp.Formats.Jpeg" Version="1.0.0-alpha2-00158" />
-    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-alpha2-00146" />
+    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-alpha2-00146" />-->
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ namespace StegoCoreTests
         [Fact]
         public void Embed_Decode()
         {
-            var image = new Image(FileHelper.GetPathToImage());
+            var image = Image.Load(FileHelper.GetPathToImage());
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             byte[] resultBytes = null;
             using(var stego = new Stego(FileHelper.GetPathToImage()))

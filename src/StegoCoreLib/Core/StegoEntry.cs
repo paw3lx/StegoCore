@@ -7,19 +7,19 @@ namespace StegoCore.Core
     {   
         public StegoEntry(Stream imageStream, Stream secretData)
         {
-            image = new Image(imageStream);
+            image = Image.Load(imageStream);
             this.LoadSecretData(secretData);
         }
 
         public StegoEntry(string imagePath)
         {
-            image = new Image(imagePath);
+            image = Image.Load(imagePath);
 
         }
 
         public StegoEntry(byte[] imageBytes)
         {
-            image = new Image(imageBytes);
+            image = Image.Load(imageBytes);
 
         }
 
