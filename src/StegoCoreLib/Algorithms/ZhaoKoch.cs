@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 using ImageSharp;
 using ImageSharp.PixelFormats;
 using StegoCore.Core;
@@ -130,30 +131,70 @@ namespace StegoCore.Algorithms
             return true;
         }
 
-        private float[][] Dct(float[][] baseMatrix)
+        
+
+        public float[][] Quantize(float[][] matrix)
         {
-            float[][] dctMatrix = new float[8][];
+            if (matrix.Length != 8 || matrix.Any(x => x.Length != 8))
+                throw new InvalidDataException("Matrix width and height are not equal 8");
+            int i, j;
+
+            float[][] quantizeMatrix = new float[8][];
+            for (i = 0; i < 8; i++)
+            {
+                quantizeMatrix[i] = new float[8];
+                for (j = 0; j < 8; j++)
+                {
+                    quantizeMatrix[i][j] = matrix[i][j] / Statics.JPEG.JpegLuminQuantTable[i][j];
+                }
+            }
+            return quantizeMatrix;
+        }
+
+        public float[][] Dequantize(float[][] quantizedMatrix)
+        {
+            if (quantizedMatrix.Length != 8 || quantizedMatrix.Any(x => x.Length != 8))
+                throw new InvalidDataException("Matrix width and height are not equal 8");
+            int i, j;
+
             float[][] matrix = new float[8][];
-            int i, j, k, l;
             for (i = 0; i < 8; i++)
             {
                 matrix[i] = new float[8];
                 for (j = 0; j < 8; j++)
                 {
-                    matrix[i][j] = new float();
+                    matrix[i][j] = quantizedMatrix[i][j] * Statics.JPEG.JpegLuminQuantTable[i][j];
+                }
+            }
+            return matrix;
+        }
+
+        public float[][] Dct(float[][] baseMatrix)
+        {
+            if (baseMatrix.Length != baseMatrix[0].Length)
+                throw new InvalidDataException("Matrix width and height are different");
+
+            int length = baseMatrix.Length;
+            float[][] dctMatrix = new float[length][];
+            float[][] matrix = new float[length][];
+            int i, j, k, l;
+            for (i = 0; i < length; i++)
+            {
+                matrix[i] = new float[length];
+                for (j = 0; j < length; j++)
+                {
                     matrix[i][j] = baseMatrix[i][j] - 128;
                 }
             }
-            for (k = 0; k < 8; k++)
+            for (k = 0; k < length; k++)
             {
-                dctMatrix[k] = new float[8];
-                for (l = 0; l < 8; l++)
+                dctMatrix[k] = new float[length];
+                for (l = 0; l < length; l++)
                 {
-                    dctMatrix[k][l] = new float();
                     dctMatrix[k][l] = 0;
-                    for (i = 0; i < 8; i++)
+                    for (i = 0; i < length; i++)
                     {
-                        for (j = 0; j < 8; j++)
+                        for (j = 0; j < length; j++)
                         {
                             dctMatrix[k][l] += matrix[i][j] * (float)Math.Cos((2 * i + 1) * k * Math.PI / 16) * (float)Math.Cos((2 * j + 1) * l * Math.PI / 16);
                         }
@@ -167,56 +208,25 @@ namespace StegoCore.Algorithms
             return dctMatrix;
         }
 
-        private float[][] Quantize(float[][] matrix)
+        public float[][] DctInv(float[][] dct)
         {
-            int i, j;
+            if (dct.Length != dct[0].Length)
+                throw new InvalidDataException("Matrix width and height are different");
 
-            float[][] quantizeMatrix = new float[8][];
-            for (i = 0; i < 8; i++)
-            {
-                quantizeMatrix[i] = new float[8];
-                for (j = 0; j < 8; j++)
-                {
-                    quantizeMatrix[i][j] = new float();
-                    quantizeMatrix[i][j] = matrix[i][j] / Statics.JPEG.JpegLuminQuantTable[i][j];
-                }
-            }
-            return quantizeMatrix;
-        }
-
-        private float[][] Dequantize(float[][] quantizedMatrix)
-        {
-            int i, j;
-
-            float[][] matrix = new float[8][];
-            for (i = 0; i < 8; i++)
-            {
-                matrix[i] = new float[8];
-                for (j = 0; j < 8; j++)
-                {
-                    matrix[i][j] = new float();
-                    matrix[i][j] = quantizedMatrix[i][j] * Statics.JPEG.JpegLuminQuantTable[i][j];
-                }
-            }
-            return matrix;
-        }
-
-        private float[][] DctInv(float[][] dct)
-        {
-            float[][] dctMatrixInt = new float[8][];
-            float[][] matrix = new float[8][];
+            int length = dct.Length;
+            float[][] dctMatrixInt = new float[length][];
+            float[][] matrix = new float[length][];
             int x, y, u, v;
-            for (x = 0; x < 8; x++)
+            for (x = 0; x < length; x++)
             {
-                dctMatrixInt[x] = new float[8];
-                for (y = 0; y < 8; y++)
+                dctMatrixInt[x] = new float[length];
+                for (y = 0; y < length; y++)
                 {
                     float ammount = 0;
-                    dctMatrixInt[x][y] = new float();
                     dctMatrixInt[x][y] = 0;
-                    for (u = 0; u < 8; u++)
+                    for (u = 0; u < length; u++)
                     {
-                        for (v = 0; v < 8; v++)
+                        for (v = 0; v < length; v++)
                         {
                             var t = dct[u][v] * (float)Math.Cos(u * (x + 0.5) * Math.PI / 8) * (float)Math.Cos(v * (y + 0.5) * Math.PI / 8);
                             if (u == 0) t *= (1 / (float)Math.Sqrt(2));
@@ -229,12 +239,11 @@ namespace StegoCore.Algorithms
                 }
             }
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < length; i++)
             {
-                matrix[i] = new float[8];
-                for (int j = 0; j < 8; j++)
+                matrix[i] = new float[length];
+                for (int j = 0; j < length; j++)
                 {
-                    matrix[i][j] = new float();
                     matrix[i][j] = dctMatrixInt[i][j] + 128;
                 }
             }
