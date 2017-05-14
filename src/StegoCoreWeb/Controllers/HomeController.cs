@@ -17,11 +17,9 @@ namespace StegoCoreWeb.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private IHostingEnvironment _environment;
-
-        public HomeController(IHostingEnvironment environment)
+        public HomeController(IHostingEnvironment env)
+            :base(env)
         {
-            _environment = environment;
         }
 
         public IActionResult Index()
@@ -43,7 +41,7 @@ namespace StegoCoreWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(IFormFile file)
         {
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = GetUploadsPath();
             if (file.Length > 0)
             {
                 var userImage = new UserImage
@@ -64,7 +62,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult ShowImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = GetUploadsPath();
             if (userImage == null || userImage.Guid == null || !System.IO.File.Exists(Path.Combine(uploads, userImage.Guid)))
                 return RedirectToAction("Index");
             return View(userImage);
@@ -73,7 +71,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult GetUserImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = GetUploadsPath();
             if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.Guid)))
             {              
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.Guid));
@@ -85,7 +83,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult GetEmbededImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = GetUploadsPath();
             if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.EmbededGuid)))
             {              
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.EmbededGuid));
@@ -101,7 +99,7 @@ namespace StegoCoreWeb.Controllers
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             if (userImage != null && userImage.IsUserImage(id))
             {
-                var filePath = Path.Combine(_environment.WebRootPath, "uploads", id);     
+                var filePath = Path.Combine(GetUploadsPath(), id);     
                 if (System.IO.File.Exists(filePath))
                     System.IO.File.Delete(filePath);
                 
@@ -116,7 +114,7 @@ namespace StegoCoreWeb.Controllers
         public async Task<IActionResult> Embed(IFormFile secret, AlgorithmEnum algorithm, string format)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = GetUploadsPath();
             var filePath = Path.Combine(uploads, userImage.Guid);
             var embedResult = new EmbedResult
             {
@@ -154,7 +152,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult Decrypt(string id, AlgorithmEnum algorithm)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", id);
+            var filePath = Path.Combine(GetUploadsPath(), id);
             if (System.IO.File.Exists(filePath) && (userImage.Guid == id || userImage.EmbededGuid == id))
             {
                 using(var stego = new Stego(filePath))
