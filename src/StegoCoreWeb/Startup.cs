@@ -31,13 +31,16 @@ namespace StegoCoreWeb
             services.AddMvc();
 
             // Adds a default in-memory implementation of IDistributedCache.
-        services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();
 
-        services.AddSession(options =>
-        {
-            options.IdleTimeout = TimeSpan.FromHours(1);
-            options.CookieHttpOnly = true;
-        });
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.CookieHttpOnly = true;
+            });
+
+            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
