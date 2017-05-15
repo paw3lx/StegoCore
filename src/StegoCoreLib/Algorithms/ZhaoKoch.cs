@@ -8,13 +8,16 @@ using ImageSharp;
 using ImageSharp.PixelFormats;
 using StegoCore.Core;
 using StegoCore.Model;
+using StegoCore.Extensions;
 
 namespace StegoCore.Algorithms
 {
-    public class ZhaoKoch : IStegoAlgorithm
+    public class ZhaoKoch : StegoAlgorithm
     {
-        public Image Embed(Image baseImage, SecretData secret)
+        public override Image Embed(Image baseImage, SecretData secret)
         {
+            var d = 2;
+            var md = 1;
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
                 throw new InvalidDataException("Secret data is to big for embending.");
@@ -25,46 +28,83 @@ namespace StegoCore.Algorithms
                 int index = 0;
                 while (index < secretBits.Length)
                 {
-                    var luminanceMatrix = ReadLuminanceMatrix(pixels, width, height);
-                    index++;
-                    width++;
-                    if ((width * 8) + 8 > baseImage.Width)
+                    if (width + 8 > baseImage.Width)
                     {
+                        height += 8;
                         width = 0;
-                        height++;
                     }
+                    if (height + 8 >= baseImage.Height)
+                    {
+                        break;
+                    }
+                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
+                    var yMatrix = luminanceMatrix.GetY();
+                    if (PossibleInsertBit(yMatrix, secretBits.Get(index), md))
+                    {                          
+                        var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
+                        luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
+                        SetLuminance(pixels, luminanceMatrix, width, height);
+                        index++;  
+                    }
+                    width += 8;
                 }
 
             }
-
             return baseImage;
         }
 
-        private float[][] ReadLuminanceMatrix(PixelAccessor<Rgba32> pixels, int width, int height)
+        private PixelLuma[][] GetLuminanceMatrix(PixelAccessor<Rgba32> pixels, int width, int height)
         {
-            if (width > (pixels.Width + 8))
-            {
-                width = 0;
-                height += 8;
-            }
-            if (height > pixels.Height + 8)
-            {
-                return null;
-            }
             int i, j;
-            float[][] luminance = new float[8][];
+            PixelLuma[][] luminance = new PixelLuma[8][];
             for (i = 0; i < 8; i++)
             {
-                luminance[i] = new float[8];
+                luminance[i] = new PixelLuma[8];
                 for (j = 0; j < 8; j++)
                 {
-                    luminance[i][j] = new float();
-                    var pixel = pixels[width * 8 + i, height * 8 + j];
+                    var pixel = pixels[width + i, height + j];
                     PixelLuma luma = new PixelLuma(pixel.R, pixel.G, pixel.B);
-                    luminance[i][j] = luma.Y;
+                    luminance[i][j] = luma;
                 }
             }
             return luminance;
+        }
+
+        private void SetLuminance(PixelAccessor<Rgba32> pixels, PixelLuma[][] luminanceMatrix, int width, int height)
+        {
+            int i, j;
+            for (i = 0; i < 8; i++)
+            {
+                for (j = 0; j < 8; j++)
+                {
+                    var pixel = pixels[width + i, height + j];
+                    var luma = luminanceMatrix[i][j];
+                    pixel.R = luma.R;
+                    pixel.G = luma.G;
+                    pixel.B = luma.B;
+                    pixels[width + i, height + j] = pixel;
+                }
+            }
+        }
+
+        public bool PossibleInsertBit(float[][] matrix, bool c, int md)
+        {
+            float[][] quantized = Quantize(Dct(matrix));
+            if (c == true)
+            {
+                if (Math.Min(Math.Abs(quantized[1][1]), Math.Abs(quantized[2][0])) + md < Math.Abs(quantized[0][2]))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (Math.Max(Math.Abs(quantized[1][1]), Math.Abs(quantized[2][0])) > Math.Abs(quantized[0][2]) + md)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public float[][] InsertOneBit(float[][] matrix, bool bit, float d)
@@ -116,20 +156,44 @@ namespace StegoCore.Algorithms
 
      
 
-        public byte[] Decode(Image stegoImage)
+        public override byte[] Decode(Image stegoImage)
         {
             throw new NotImplementedException();
         }
 
-        public int ReadSecretLength(Image stegoImage)
+        public bool PossibleReadBit(float[][] matrix, float d)
         {
-            throw new NotImplementedException();
+            float[][] quantized = Quantize(Dct(matrix));
+            float k1 = quantized[1][1];
+            float k2 = quantized[2][0];
+            float k3 = quantized[0][2];
+            if ((k1 > k3 + d) && (k2 > k3 + d)) return true;
+            if ((k1 + d < k3) && (k2 + d < k3)) return true;
+            return false;
         }
 
-        public bool EmbedPossible(Image image, int secretLength)
+        public bool ReadOneBit(float[][] matrix, float d)
         {
+            float[][] quantized = Quantize(Dct(matrix));
+            float k1 = quantized[1][1];
+            float k2 = quantized[2][0];
+            float k3 = quantized[0][2];
+
+            if ((k1 > k3 + d) && (k2 > k3 + d)) return true;
+            if ((k1 + d < k3) && (k2 + d < k3)) return false;
             return true;
         }
+
+        public override int ReadSecretLength(Image stegoImage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool EmbedPossible(Image image, int secretLength)
+        {
+            int count = (image.Width / 8) * (image.Height / 8);
+            return count >= secretLength;
+        }   
 
         
 

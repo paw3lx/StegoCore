@@ -24,6 +24,16 @@ namespace StegoCore.Model
 
         public float Y => _y;
 
+        public float Cb => _cb;
+
+        public float Cr => _cr;
+
+        public byte R => _r;
+        
+        public byte G => _g;
+
+        public byte B => _b;
+
         private byte _r, _g, _b;
         private float _y, _cb, _cr;
 
