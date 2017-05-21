@@ -14,10 +14,10 @@ namespace StegoCore.Algorithms
 {
     public class ZhaoKoch : StegoAlgorithm
     {
+        private int d = 1;
+        private int md = 1;
         public override Image Embed(Image baseImage, SecretData secret)
         {
-            var d = 2;
-            var md = 1;
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
                 throw new InvalidDataException("Secret data is to big for embending.");
@@ -39,7 +39,7 @@ namespace StegoCore.Algorithms
                     }
                     var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
                     var yMatrix = luminanceMatrix.GetY();
-                    if (PossibleInsertBit(yMatrix, secretBits.Get(index), md))
+                    if (IsPossibleToInsertBit(yMatrix, secretBits.Get(index), md))
                     {                          
                         var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
                         luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
@@ -51,6 +51,52 @@ namespace StegoCore.Algorithms
 
             }
             return baseImage;
+        }
+
+        public override bool EmbedPossible(Image image, int secretLength)
+        {
+            int count = (image.Width / 8) * (image.Height / 8);
+            return count >= secretLength;
+        } 
+
+        public override byte[] Decode(Image stegoImage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int ReadSecretLength(Image stegoImage)
+        {
+            BitArray lengthBits = new BitArray(this.SecretDataLength);
+            using(var pixels = stegoImage.Lock())
+            {
+                int width = 0;
+                int height = 0;
+                int index = 0;
+                while (index < this.SecretDataLength)
+                {
+                    if (width + 8 > stegoImage.Width)
+                    {
+                        height += 8;
+                        width = 0;
+                    }
+                    if (height + 8 >= stegoImage.Height)
+                    {
+                        break;
+                    }
+                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
+                    var yMatrix = luminanceMatrix.GetY();
+                    if (IsPossibleToReadBit(yMatrix, d))
+                    {                          
+                        var bit = ReadOneBit(yMatrix, d);
+                        lengthBits.Set(index, bit);
+                        index++;
+                    }
+                    width += 8;
+                }
+            }
+            byte[] bytes = lengthBits.ToByteArray();
+            int length = BitConverter.ToInt32(bytes, 0);
+            return length;
         }
 
         private PixelLuma[][] GetLuminanceMatrix(PixelAccessor<Rgba32> pixels, int width, int height)
@@ -87,7 +133,7 @@ namespace StegoCore.Algorithms
             }
         }
 
-        public bool PossibleInsertBit(float[][] matrix, bool c, int md)
+        public bool IsPossibleToInsertBit(float[][] matrix, bool c, int md)
         {
             float[][] quantized = Quantize(Dct(matrix));
             if (c == true)
@@ -155,13 +201,7 @@ namespace StegoCore.Algorithms
         }
 
      
-
-        public override byte[] Decode(Image stegoImage)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool PossibleReadBit(float[][] matrix, float d)
+        private bool IsPossibleToReadBit(float[][] matrix, float d)
         {
             float[][] quantized = Quantize(Dct(matrix));
             float k1 = quantized[1][1];
@@ -172,7 +212,7 @@ namespace StegoCore.Algorithms
             return false;
         }
 
-        public bool ReadOneBit(float[][] matrix, float d)
+        private bool ReadOneBit(float[][] matrix, float d)
         {
             float[][] quantized = Quantize(Dct(matrix));
             float k1 = quantized[1][1];
@@ -183,18 +223,6 @@ namespace StegoCore.Algorithms
             if ((k1 + d < k3) && (k2 + d < k3)) return false;
             return true;
         }
-
-        public override int ReadSecretLength(Image stegoImage)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool EmbedPossible(Image image, int secretLength)
-        {
-            int count = (image.Width / 8) * (image.Height / 8);
-            return count >= secretLength;
-        }   
-
         
 
         public float[][] Quantize(float[][] matrix)

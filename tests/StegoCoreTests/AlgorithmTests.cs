@@ -66,6 +66,18 @@ namespace StegoCoreTests
             Assert.Equal(secretDataBytes.Length, readedLength);
         }
 
+        [Fact]
+        public void ZhaoKoch_Embed_SecretDataLength()
+        {
+            var lsb = AlgorithmFactory.Create(AlgorithmEnum.ZhaoKoch);
+            byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
+            var secretData = new SecretData(secretDataBytes);
+            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData);
+            int readedLength = lsb.ReadSecretLength(imageWithSecret);
+
+            Assert.Equal(secretDataBytes.Length, readedLength);
+        }
+
 
         private void EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
