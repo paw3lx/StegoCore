@@ -57,7 +57,42 @@ namespace StegoCore.Algorithms
 
         public override byte[] Decode(Image stegoImage)
         {
-            throw new NotImplementedException();
+            int length = ReadSecretLength(stegoImage) * 8;
+            if (length <= 0 || !EmbedPossible(stegoImage, length))
+                throw new InvalidDataException($"Cannot read secret from this image file. Readed secret length: {length}");
+            BitArray bits = new BitArray(length);
+            using(var pixels = stegoImage.Lock())
+            {
+                int width = 0;
+                int height = 0;
+                int index = 0;
+                while (index < length + this.SecretDataLength)
+                {
+                    if (width + 8 > stegoImage.Width)
+                    {
+                        height += 8;
+                        width = 0;
+                    }
+                    if (height + 8 >= stegoImage.Height)
+                    {
+                        break;
+                    }
+                    if (index < this.SecretDataLength){
+                        index++;
+                        width += 8;
+                        continue;
+                    }
+                        
+                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
+                    var yMatrix = luminanceMatrix.GetY();
+                    var bit = ReadOneBit(yMatrix, d);
+                    bits.Set(index - this.SecretDataLength, bit);
+                    index++;
+                    width += 8;
+                }
+            }
+            return bits.ToByteArray();
+
         }
 
         public override int ReadSecretLength(Image stegoImage)

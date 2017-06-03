@@ -52,10 +52,10 @@ namespace StegoCoreTests
             var algorithm = AlgorithmFactory.Create(alg);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             
-            EncryptAndSave(algorithm, secretDataBytes, outFileName);
+            var notSavedStego = EncryptAndSave(algorithm, secretDataBytes, outFileName);
 
             var stegoImage = Image.Load(outFileName);
-            byte[] resultSecret = algorithm.Decode(stegoImage);
+            byte[] resultSecret = algorithm.Decode(notSavedStego);
 
             Assert.Equal(secretDataBytes, resultSecret);
         }
@@ -87,11 +87,12 @@ namespace StegoCoreTests
         
 
 
-        private void EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
+        private Image EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
             var secretData = new SecretData(secretDataBytes);
-            var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
+            var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData);
             result.Save(fileName);
+            return result;
         }
     }
 }
