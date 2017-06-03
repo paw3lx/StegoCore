@@ -157,7 +157,7 @@ namespace StegoCoreWeb.Controllers
             {
                 using(var stego = new Stego(filePath))
                 {
-                    var result = stego.Decode(AlgorithmEnum.Lsb);
+                    var result = stego.Decode(algorithm);
                     return File(result, "application/octet-stream", "secret");
                 }
             }

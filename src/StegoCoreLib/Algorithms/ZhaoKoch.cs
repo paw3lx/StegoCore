@@ -14,8 +14,7 @@ namespace StegoCore.Algorithms
 {
     public class ZhaoKoch : StegoAlgorithm
     {
-        private int d = 1;
-        private int md = 1;
+        private int d = 5;
         public override Image Embed(Image baseImage, SecretData secret)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
@@ -39,13 +38,10 @@ namespace StegoCore.Algorithms
                     }
                     var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
                     var yMatrix = luminanceMatrix.GetY();
-                    if (IsPossibleToInsertBit(yMatrix, secretBits.Get(index), md))
-                    {                          
-                        var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
-                        luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
-                        SetLuminance(pixels, luminanceMatrix, width, height);
-                        index++;  
-                    }
+                    var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
+                    luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
+                    SetLuminance(pixels, luminanceMatrix, width, height);
+                    index++;      
                     width += 8;
                 }
 
@@ -85,12 +81,9 @@ namespace StegoCore.Algorithms
                     }
                     var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
                     var yMatrix = luminanceMatrix.GetY();
-                    if (IsPossibleToReadBit(yMatrix, d))
-                    {                          
-                        var bit = ReadOneBit(yMatrix, d);
-                        lengthBits.Set(index, bit);
-                        index++;
-                    }
+                    var bit = ReadOneBit(yMatrix, d);
+                    lengthBits.Set(index, bit);
+                    index++;
                     width += 8;
                 }
             }
@@ -133,95 +126,45 @@ namespace StegoCore.Algorithms
             }
         }
 
-        public bool IsPossibleToInsertBit(float[][] matrix, bool c, int md)
-        {
-            float[][] quantized = Quantize(Dct(matrix));
-            if (c == true)
-            {
-                if (Math.Min(Math.Abs(quantized[1][1]), Math.Abs(quantized[2][0])) + md < Math.Abs(quantized[0][2]))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (Math.Max(Math.Abs(quantized[1][1]), Math.Abs(quantized[2][0])) > Math.Abs(quantized[0][2]) + md)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public float[][] InsertOneBit(float[][] matrix, bool bit, float d)
         {
-            float[][] quantizeMatrix = Quantize(Dct(matrix));
+            float[][] quantizeMatrix = (Dct(matrix));
 
-            float k1 = quantizeMatrix[1][1];
-            float k2 = quantizeMatrix[2][0];
-            float k3 = quantizeMatrix[0][2];
+            float k1 = quantizeMatrix[3][4];
+            float k2 = quantizeMatrix[4][3];
+            float k = Math.Abs(k1) - Math.Abs(k2);
             if (bit)
             {
-                k3 += d;
-                do
-                {
-                    k1 += (float)0.05;
-                    k2 += (float)0.05;
-                    k3 -= (float)0.01;
+                while (!(Math.Abs(k1) - Math.Abs(k2) < -(d + 5))){
+                    if (k2 < 0)
+                        k2--;
+                    if (k2 >= 0)
+                        k2 ++;
                 }
-                while ((k1 <= k3) || (k2 <= k3));
-
-                //write
-                quantizeMatrix[1][1] = k1;
-                quantizeMatrix[2][0] = k2;
-                quantizeMatrix[0][2] = k3 - d;
             }
             else
             {
-
-                k1 += d;
-                k2 += d;
-
-                do
-                {
-                    k1 -= (float)0.05;
-                    k2 -= (float)0.05;
-                    k3 += (float)0.01;
+                while (!(Math.Abs(k1) - Math.Abs(k2) > (d + 5))){
+                    if (k1 < 0)
+                        k1--;
+                    if (k1 >= 0)
+                        k1++;
                 }
-                while ((k1 >= k3) || (k2 >= k3));
-
-                quantizeMatrix[1][1] = k1 - d;
-                quantizeMatrix[2][0] = k2 - d;
-                quantizeMatrix[0][2] = k3;
-
             }
-            float[][] outMatrix = DctInv(Dequantize(quantizeMatrix));
-
+            quantizeMatrix[3][4] = k1;
+            quantizeMatrix[4][3] = k2;
+            float[][] outMatrix = DctInv((quantizeMatrix));
             return outMatrix;
-        }
-
-     
-        private bool IsPossibleToReadBit(float[][] matrix, float d)
-        {
-            float[][] quantized = Quantize(Dct(matrix));
-            float k1 = quantized[1][1];
-            float k2 = quantized[2][0];
-            float k3 = quantized[0][2];
-            if ((k1 > k3 + d) && (k2 > k3 + d)) return true;
-            if ((k1 + d < k3) && (k2 + d < k3)) return true;
-            return false;
         }
 
         private bool ReadOneBit(float[][] matrix, float d)
         {
-            float[][] quantized = Quantize(Dct(matrix));
-            float k1 = quantized[1][1];
-            float k2 = quantized[2][0];
-            float k3 = quantized[0][2];
-
-            if ((k1 > k3 + d) && (k2 > k3 + d)) return true;
-            if ((k1 + d < k3) && (k2 + d < k3)) return false;
-            return true;
+            float[][] quantized = (Dct(matrix));
+            float k1 = quantized[3][4];
+            float k2 = quantized[4][3];
+            if (Math.Abs(k1) - Math.Abs(k2) < -d)
+                return true;
+            return false;
         }
         
 

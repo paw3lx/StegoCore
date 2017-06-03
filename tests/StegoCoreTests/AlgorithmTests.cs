@@ -30,26 +30,32 @@ namespace StegoCoreTests
         [Fact]
         public void Lsb_Encrypt_Decrypt_Bmp()
         {
-            Lsb_Encrypt_Decrypt(new BmpFormat(), this.bmpOutFileName);
+            Encrypt_Decrypt(AlgorithmEnum.Lsb, new BmpFormat(), this.bmpOutFileName);
         }
 
         [Fact]
         public void Lsb_Encrypt_Decrypt_Png()
         {
-            Lsb_Encrypt_Decrypt(new PngFormat(), this.pngOutFileName);
+            Encrypt_Decrypt(AlgorithmEnum.Lsb, new PngFormat(), this.pngOutFileName);
         }
 
-        private void Lsb_Encrypt_Decrypt(IImageFormat imageFormat, string outFileName)
+        [Fact]
+        public void ZhaoKoch_Encrypt_Decrypt_Jpeg()
+        {
+            Encrypt_Decrypt(AlgorithmEnum.ZhaoKoch, new JpegFormat(), this.jpgOutFileName);
+        }
+
+        private void Encrypt_Decrypt(AlgorithmEnum alg, IImageFormat imageFormat, string outFileName)
         {
             Configuration.Default.AddImageFormat(imageFormat);
 
-            var lsb = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
+            var algorithm = AlgorithmFactory.Create(alg);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             
-            EncryptAndSave(lsb, secretDataBytes, outFileName);
+            EncryptAndSave(algorithm, secretDataBytes, outFileName);
 
             var stegoImage = Image.Load(outFileName);
-            byte[] resultSecret = lsb.Decode(stegoImage);
+            byte[] resultSecret = algorithm.Decode(stegoImage);
 
             Assert.Equal(secretDataBytes, resultSecret);
         }
@@ -72,11 +78,13 @@ namespace StegoCoreTests
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.ZhaoKoch);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
-            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData);
+            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
             int readedLength = lsb.ReadSecretLength(imageWithSecret);
-
+            imageWithSecret.Save("out3.jpg");
             Assert.Equal(secretDataBytes.Length, readedLength);
         }
+
+        
 
 
         private void EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
