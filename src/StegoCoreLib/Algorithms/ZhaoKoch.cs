@@ -60,50 +60,31 @@ namespace StegoCore.Algorithms
             int length = ReadSecretLength(stegoImage) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
                 throw new InvalidDataException($"Cannot read secret from this image file. Readed secret length: {length}");
-            BitArray bits = new BitArray(length);
-            using(var pixels = stegoImage.Lock())
-            {
-                int width = 0;
-                int height = 0;
-                int index = 0;
-                while (index < length + this.SecretDataLength)
-                {
-                    if (width + 8 > stegoImage.Width)
-                    {
-                        height += 8;
-                        width = 0;
-                    }
-                    if (height + 8 >= stegoImage.Height)
-                    {
-                        break;
-                    }
-                    if (index < this.SecretDataLength){
-                        index++;
-                        width += 8;
-                        continue;
-                    }
-                        
-                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
-                    var yMatrix = luminanceMatrix.GetY();
-                    var bit = ReadOneBit(yMatrix, d);
-                    bits.Set(index - this.SecretDataLength, bit);
-                    index++;
-                    width += 8;
-                }
-            }
+            BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
             return bits.ToByteArray();
 
         }
 
         public override int ReadSecretLength(Image stegoImage)
         {
-            BitArray lengthBits = new BitArray(this.SecretDataLength);
+            BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
+            byte[] bytes = lengthBits.ToByteArray();
+            int length = BitConverter.ToInt32(bytes, 0);
+            return length;
+        }
+
+        private BitArray ReadBits(Image stegoImage, int start, int end)
+        {
+            int length = end - start;
+            if (length <= 0)
+                throw new InvalidDataException("end has to be > than start");
+            BitArray bits = new BitArray(length);
             using(var pixels = stegoImage.Lock())
             {
                 int width = 0;
                 int height = 0;
                 int index = 0;
-                while (index < this.SecretDataLength)
+                while (index < end)
                 {
                     if (width + 8 > stegoImage.Width)
                     {
@@ -114,17 +95,21 @@ namespace StegoCore.Algorithms
                     {
                         break;
                     }
+                    if (index < start)
+                    {
+                        index++;
+                        width += 8;
+                        continue;
+                    }
                     var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
                     var yMatrix = luminanceMatrix.GetY();
                     var bit = ReadOneBit(yMatrix, d);
-                    lengthBits.Set(index, bit);
+                    bits.Set(index - start, bit);
                     index++;
                     width += 8;
                 }
             }
-            byte[] bytes = lengthBits.ToByteArray();
-            int length = BitConverter.ToInt32(bytes, 0);
-            return length;
+            return bits;
         }
 
         private PixelLuma[][] GetLuminanceMatrix(PixelAccessor<Rgba32> pixels, int width, int height)
