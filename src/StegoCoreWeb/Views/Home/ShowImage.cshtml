@@ -17,15 +17,12 @@
                 <div class="col-md-12">
                     <label for="algorithm" class="col-md-3">Select algorithm</label>
                     <div class="col-md-9">
-                        <select name="algorithm" class="form-control">             
-                            <option value="0">LSB</option>
-                            <option value="1">Zhao&Koch</option>
-                        </select>
+                        <select asp-for="algorithm" asp-items="Model.Algorithms"  class="form-control"></select>
                     </div>
                 
                 </div>
                 <div class="col-md-12">
-                    <label for="algorithm" class="col-md-3">Select output format</label>
+                    <label for="format" class="col-md-3">Select output format</label>
                     <div class="col-md-9">
                         <select name="format" class="form-control">             
                             <option value="bmp">Bmp</option>
@@ -38,38 +35,33 @@
                 <button class="btn btn-primary btn-lg margin-top-10">Embed</button>
              </form>
         </div>
-    </div>
-      
+    </div>  
   </div>
   <div class="col-md-6 text-center">
       <div class="panel panel-info">
           <div class="panel-heading"> <h3 class="panel-title">Decrypt file from image</h3> </div>
-  <div class="panel-body">
-      <form method="post" asp-controller="Home" asp-action="Decrypt" asp-antiforgery="true">
-           <input type="hidden" name="id" value="@Model.Guid">
-           <label for="algorithm" class="col-md-3">Select algorithm</label>
-           <div class=" col-md-9">
-               <select name="algorithm" class="form-control">             
-                    <option value="0">LSB</option>
-                    <option value="1">Zhao&Koch</option>
-                </select>
-           </div>
-           <div class="col-md-12">
-               <button class="btn btn-primary btn-lg" type="submit">Decrypt</button>
-           </div>
-            
-      </form>
-  </div>
-</div>
-      
-  </div>
-  <div class="col-md-12">
-          <h3>Your original image</h3>
-      <img src="/Home/GetUserImage" alt="source image" style="width: 100%;">
-      <div style="margin-top:10px" class="text-center">
-          <a href="/Home/RemoveImage?id=@Model.Guid" class="btn btn-danger">Remove your image</a>
-      </div>
-          
-      
-  </div>
+            <div class="panel-body">
+                <form method="post" asp-controller="Home" asp-action="Decrypt" asp-antiforgery="true">
+                    <input type="hidden" name="id" value="Model.Guid">
+                    <label for="algorithm" class="col-md-3">Select algorithm</label>
+                    <div class=" col-md-9">
+                        <select asp-for="algorithm" asp-items="Model.Algorithms"  class="form-control"></select>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary btn-lg" type="submit">Decrypt</button>
+                    </div>  
+                </form>
+            </div>
+        </div>  
+    </div>
+    <div class="col-md-12">
+        <h3>Your original image</h3>
+        <img src="/Home/GetUserImage" alt="source image" style="width: 100%;">
+        <div style="margin-top:10px" class="text-center">
+            <form asp-controller="Home" asp-action="RemoveImage" method="post" asp-anti-forgery="true">
+                <input type="hidden" name="id" value="@Model.Guid" />
+                <button class="btn btn-danger" type="submit">Remove this image</button>
+            </form>
+        </div>
+    </div>
 </div>

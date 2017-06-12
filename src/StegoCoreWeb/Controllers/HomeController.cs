@@ -12,14 +12,17 @@ using StegoCore;
 using StegoCore.Algorithms;
 using StegoCoreWeb.Extensions;
 using StegoCoreWeb.Model;
+using StegoCoreWeb.Model.Logic;
 
 namespace StegoCoreWeb.Controllers
 {
     public class HomeController : ControllerBase
     {
+        protected readonly SteganographyModel _stegoModel;
         public HomeController(IHostingEnvironment env)
             :base(env)
         {
+            _stegoModel = new SteganographyModel(env);
         }
 
         public IActionResult Index()
@@ -41,7 +44,7 @@ namespace StegoCoreWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(IFormFile file)
         {
-            var uploads = GetUploadsPath();
+            var uploads = _stegoModel.GetUploadsPath();
             if (file.Length > 0)
             {
                 var userImage = new UserImage
@@ -62,7 +65,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult ShowImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = GetUploadsPath();
+            var uploads = _stegoModel.GetUploadsPath();
             if (userImage == null || userImage.Guid == null || !System.IO.File.Exists(Path.Combine(uploads, userImage.Guid)))
                 return RedirectToAction("Index");
             return View(userImage);
@@ -71,7 +74,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult GetUserImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = GetUploadsPath();
+            var uploads = _stegoModel.GetUploadsPath();
             if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.Guid)))
             {              
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.Guid));
@@ -83,7 +86,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult GetEmbededImage()
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = GetUploadsPath();
+            var uploads = _stegoModel.GetUploadsPath();
             if (userImage != null && System.IO.File.Exists(Path.Combine(uploads, userImage.EmbededGuid)))
             {              
                 var file = System.IO.File.ReadAllBytes(Path.Combine(uploads, userImage.EmbededGuid));
@@ -94,12 +97,14 @@ namespace StegoCoreWeb.Controllers
         }
 
 
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public IActionResult RemoveImage(string id)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
             if (userImage != null && userImage.IsUserImage(id))
             {
-                var filePath = Path.Combine(GetUploadsPath(), id);     
+                var filePath = Path.Combine(_stegoModel.GetUploadsPath(), id);     
                 if (System.IO.File.Exists(filePath))
                     System.IO.File.Delete(filePath);
                 
@@ -113,38 +118,14 @@ namespace StegoCoreWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Embed(IFormFile secret, AlgorithmEnum algorithm, string format)
         {
-            var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var uploads = GetUploadsPath();
-            var filePath = Path.Combine(uploads, userImage.Guid);
-            var embedResult = new EmbedResult
-            {
-                Algorithm = algorithm
-            };
-            if (secret != null && secret.Length > 0 && System.IO.File.Exists(filePath))
-            {
-                byte[] secretBytes = null;
-                using (var memoryStrem = new MemoryStream())
-                {
-                    await secret.CopyToAsync(memoryStrem);
-                    secretBytes = memoryStrem.ToArray();
-                }
-                using(var stego = new Stego(filePath))
-                {
-                    stego.SetSecretData(secretBytes);
-                    var imageWithSecret = stego.Embed(algorithm);
-                    imageWithSecret.Save(Path.Combine(uploads, embedResult.Guid), Helpers.FormatHelper.GetFormatByName(format));
-                    embedResult.Success = true;
-                    embedResult.Format = userImage.EmbededFormat = format;
-                    userImage.EmbededGuid = embedResult.Guid;
-                }
-                HttpContext.Session.Set<UserImage>(nameof(UserImage), userImage);
+            EmbedResult result;
+            try {
+                result = await _stegoModel.Embed(secret, algorithm, format, HttpContext.Session);
             }
-            else {
-                return Content("You have to select secret file to embed in image");
-
+            catch(Exception e){
+                return Content($"Error while embending: {e.Message}");
             }
-            
-            return View(embedResult);
+            return View(result);
         }
 
         [HttpPost]
@@ -152,7 +133,7 @@ namespace StegoCoreWeb.Controllers
         public IActionResult Decrypt(string id, AlgorithmEnum algorithm)
         {
             var userImage = HttpContext.Session.Get<UserImage>(nameof(UserImage));
-            var filePath = Path.Combine(GetUploadsPath(), id);
+            var filePath = Path.Combine(_stegoModel.GetUploadsPath(), id);
             if (System.IO.File.Exists(filePath) && (userImage.Guid == id || userImage.EmbededGuid == id))
             {
                 using(var stego = new Stego(filePath))

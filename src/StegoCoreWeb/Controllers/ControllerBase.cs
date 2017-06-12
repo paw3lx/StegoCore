@@ -13,15 +13,5 @@ namespace StegoCoreWeb.Controllers
         {
             _environment = environment;
         }
-
-        public string GetUploadsPath()
-        {
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploads))
-            {
-                Directory.CreateDirectory(uploads);
-            }
-            return uploads;
-        }
     }
 }

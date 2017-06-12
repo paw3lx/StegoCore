@@ -16,6 +16,7 @@ namespace StegoCoreWeb
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .UseUrls("http://*:5000")
                 .Build();
 
             host.Run();
