@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../StegoCoreLib/StegoCoreLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.0.1" />
@@ -36,6 +32,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
 
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha7-00036" />
+    <PackageReference Include="StegoCore" Version="0.1.0" />
     <!--<PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha2-00158" />
     <PackageReference Include="ImageSharp.Formats.Gif" Version="1.0.0-alpha2-00139" />
     <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-alpha2-00154	" />
