@@ -58,6 +58,14 @@ namespace StegoCore
             base.LoadSecretData(bytes);
         }
 
+        /// <summary>
+        /// Embed secret data in Imaga
+        /// </summary>
+        /// <param name="algorithm">Algorithm used in embending</param>
+        /// <exception cref="System.NullReferenceException">Thrown if the <paramref name="algorithm"/> is is not known algorithm type.</exception>
+        /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
+        /// <exception cref="StegoCore.Exceptions.DataToBigException">Thrown if the secred data is to big for embending</exception>
+        /// <returns></returns>
         public ImageSharp.Image Embed(AlgorithmEnum algorithm)
         {
             var alg = AlgorithmFactory.Create(algorithm);

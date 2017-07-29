@@ -11,7 +11,7 @@ namespace StegoCore.Algorithms
 
             if (type == null)
             {
-                throw new InvalidOperationException(selection.ToString() + " is not a known algorithm type");
+                throw new NullReferenceException(selection.ToString() + " is not a known algorithm type");
             }
 
             if (!typeof(StegoAlgorithm).IsAssignableFrom(type))

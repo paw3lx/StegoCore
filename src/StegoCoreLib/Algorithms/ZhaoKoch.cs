@@ -9,6 +9,7 @@ using ImageSharp.PixelFormats;
 using StegoCore.Core;
 using StegoCore.Model;
 using StegoCore.Extensions;
+using StegoCore.Exceptions;
 
 namespace StegoCore.Algorithms
 {
@@ -19,7 +20,7 @@ namespace StegoCore.Algorithms
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new InvalidDataException("Secret data is to big for embending.");
+                throw new DataToBigException("Secret data is to big for embending.");
             using (var pixels = baseImage.Lock())
             {
                 int width = 0;
