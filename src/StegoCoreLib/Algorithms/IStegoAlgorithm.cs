@@ -2,12 +2,13 @@ namespace StegoCore.Algorithms
 {
     using ImageSharp;
     using StegoCore.Core;
+    using StegoCore.Model;
 
     public interface IStegoAlgorithm
     {
-        Image Embed(Image baseImage, SecretData secret);
+        Image Embed(Image baseImage, SecretData secret, Settings settings);
 
-        byte[] Decode(Image stegoImage);
+        byte[] Decode(Image stegoImage, Settings settings);
 
         int ReadSecretLength(Image stegoImage);
 
@@ -23,16 +24,18 @@ namespace StegoCore.Algorithms
         /// 
         /// </summary>
         /// <param name="stegoImage"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract byte[] Decode(Image stegoImage);
+        public abstract byte[] Decode(Image stegoImage, Settings settings);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="baseImage"></param>
         /// <param name="secret"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract Image Embed(Image baseImage, SecretData secret);
+        public abstract Image Embed(Image baseImage, SecretData secret, Settings settings);
 
         /// <summary>
         /// Checks if embed is possible

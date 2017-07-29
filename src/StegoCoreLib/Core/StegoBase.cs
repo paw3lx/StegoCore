@@ -3,11 +3,13 @@ namespace StegoCore.Core
     using System.Collections;
     using ImageSharp;
     using StegoCore.Extensions;
+    using StegoCore.Model;
 
     public abstract class StegoBase : IStegoEntry
     {
         protected Image image;
         protected SecretData secretData;
+        protected Settings settings;
 
         public Image StegoImage => image;
 

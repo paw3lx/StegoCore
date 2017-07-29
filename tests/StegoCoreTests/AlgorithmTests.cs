@@ -55,7 +55,7 @@ namespace StegoCoreTests
             var notSavedStego = EncryptAndSave(algorithm, secretDataBytes, outFileName);
 
             var stegoImage = Image.Load(outFileName);
-            byte[] resultSecret = algorithm.Decode(notSavedStego);
+            byte[] resultSecret = algorithm.Decode(notSavedStego, null);
 
             Assert.Equal(secretDataBytes, resultSecret);
         }
@@ -66,7 +66,7 @@ namespace StegoCoreTests
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
-            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
+            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
             int readedLength = lsb.ReadSecretLength(imageWithSecret);
 
             Assert.Equal(secretDataBytes.Length, readedLength);
@@ -78,7 +78,7 @@ namespace StegoCoreTests
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.ZhaoKoch);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
-            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData);
+            var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
             int readedLength = lsb.ReadSecretLength(imageWithSecret);
             imageWithSecret.Save("out3.jpg");
             Assert.Equal(secretDataBytes.Length, readedLength);
@@ -90,7 +90,7 @@ namespace StegoCoreTests
         private Image EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
             var secretData = new SecretData(secretDataBytes);
-            var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData);
+            var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData, null);
             result.Save(fileName);
             return result;
         }

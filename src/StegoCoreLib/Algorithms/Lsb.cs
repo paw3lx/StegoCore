@@ -5,12 +5,13 @@ using ImageSharp;
 using StegoCore.Core;
 using StegoCore.Extensions;
 using StegoCore.Exceptions;
+using StegoCore.Model;
 
 namespace StegoCore.Algorithms
 {
     public class Lsb : StegoAlgorithm
     {
-        public override Image Embed(Image baseImage, SecretData secret)
+        public override Image Embed(Image baseImage, SecretData secret, Settings settings)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
@@ -35,7 +36,7 @@ namespace StegoCore.Algorithms
             return baseImage;
         }
 
-        public override byte[] Decode(Image stegoImage)
+        public override byte[] Decode(Image stegoImage, Settings setting)
         {
             int length  = ReadSecretLength(stegoImage) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))

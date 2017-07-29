@@ -4,6 +4,7 @@ namespace StegoCore
     using Core;
     using StegoCore.Algorithms;
     using StegoCore.Extensions;
+    using StegoCore.Model;
 
     public sealed class Stego : StegoEntry
     {
@@ -73,7 +74,7 @@ namespace StegoCore
             if (this.secretData == null)
                 throw new System.NullReferenceException("Secret data cannot be null");
             var alg = AlgorithmFactory.Create(algorithm);
-            return alg.Embed(this.image, this.secretData);
+            return alg.Embed(this.image, this.secretData, this.settings);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace StegoCore
             if (this.image == null)
                 throw new System.NullReferenceException("Image cannot be null");
             var alg = AlgorithmFactory.Create(algorithm);
-            return alg.Decode(this.image);
+            return alg.Decode(this.image, this.settings);
         }
 
         /// <summary>
@@ -99,6 +100,15 @@ namespace StegoCore
         public void SetImage(ImageSharp.Image image)
         {
             this.image = image;
+        }
+
+        /// <summary>
+        /// Sets settings used in embeding and decoding
+        /// </summary>
+        /// <param name="settings"></param>
+        public void SetSettings(Settings settings)
+        {
+            this.settings = settings;
         }
 
     }
