@@ -4,6 +4,7 @@ using System.IO;
 using ImageSharp;
 using StegoCore.Core;
 using StegoCore.Extensions;
+using StegoCore.Exceptions;
 
 namespace StegoCore.Algorithms
 {
@@ -13,7 +14,7 @@ namespace StegoCore.Algorithms
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new InvalidDataException("Secret data is to big for embending.");
+                throw new DataToBigException("Secret data is to big for embending.");
             using(var pixels = baseImage.Lock())
             {
                 for (int i = 0; i < baseImage.Height; i++)
@@ -38,7 +39,7 @@ namespace StegoCore.Algorithms
         {
             int length  = ReadSecretLength(stegoImage) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
-                throw new InvalidDataException($"Cannot read secret from this image file. Readed secret length: {length}");
+                throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
 
             BitArray bits = new BitArray(length);
             using(var pixels = stegoImage.Lock())

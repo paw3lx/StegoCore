@@ -20,7 +20,6 @@ namespace StegoCore.Core
         public StegoEntry(byte[] imageBytes)
         {
             image = Image.Load(imageBytes);
-
         }
 
         public void SaveImage(string path)

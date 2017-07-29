@@ -59,31 +59,46 @@ namespace StegoCore
         }
 
         /// <summary>
-        /// Embed secret data in Imaga
+        /// Embed secret data in Image
         /// </summary>
         /// <param name="algorithm">Algorithm used in embending</param>
         /// <exception cref="System.NullReferenceException">Thrown if the <paramref name="algorithm"/> is is not known algorithm type.</exception>
         /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
         /// <exception cref="StegoCore.Exceptions.DataToBigException">Thrown if the secred data is to big for embending</exception>
-        /// <returns></returns>
+        /// <returns>Image with embeded secret data</returns>
         public ImageSharp.Image Embed(AlgorithmEnum algorithm)
         {
+            if (this.image == null)
+                throw new System.NullReferenceException("Image cannot be null");
+            if (this.secretData == null)
+                throw new System.NullReferenceException("Secret data cannot be null");
             var alg = AlgorithmFactory.Create(algorithm);
             return alg.Embed(this.image, this.secretData);
         }
 
-        public byte[] Decode(AlgorithmEnum algorithm, ImageSharp.Image stegoImage)
-        {
-            var alg = AlgorithmFactory.Create(algorithm);
-            return alg.Decode(stegoImage);
-        }
-
+        /// <summary>
+        /// Decodes secred data from Image
+        /// </summary>
+        /// <param name="algorithm">Algorithm used in decoding</param>
+        /// <exception cref="System.NullReferenceException">Thrown if the <paramref name="algorithm"/> is is not known algorithm type.</exception>
+        /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
+        /// <exception cref="StegoCore.Exceptions.DecodeException">Thrown if error while decoding occurs</exception>
+        /// <returns>Bytes of decoded secred data</returns>
         public byte[] Decode(AlgorithmEnum algorithm)
         {
             if (this.image == null)
-                return null;
+                throw new System.NullReferenceException("Image cannot be null");
             var alg = AlgorithmFactory.Create(algorithm);
             return alg.Decode(this.image);
+        }
+
+        /// <summary>
+        /// Sets the image used for emeding or decoding
+        /// </summary>
+        /// <param name="image">Image to set</param>
+        public void SetImage(ImageSharp.Image image)
+        {
+            this.image = image;
         }
 
     }

@@ -18,7 +18,8 @@ namespace StegoCoreTests
             {
                 stego.SetSecretData(fileBytes);
                 var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
-                resultBytes = stego.Decode(AlgorithmEnum.Lsb, imageWithSecret);
+                stego.SetImage(imageWithSecret);
+                resultBytes = stego.Decode(AlgorithmEnum.Lsb);
             }            
             Assert.Equal(fileBytes, resultBytes);
         }

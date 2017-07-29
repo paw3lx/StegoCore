@@ -60,7 +60,7 @@ namespace StegoCore.Algorithms
         {
             int length = ReadSecretLength(stegoImage) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
-                throw new InvalidDataException($"Cannot read secret from this image file. Readed secret length: {length}");
+                throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
             BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
             return bits.ToByteArray();
 
