@@ -6,6 +6,7 @@ using StegoCore.Core;
 using StegoCore.Extensions;
 using StegoCore.Exceptions;
 using StegoCore.Model;
+using System.Collections.Generic;
 
 namespace StegoCore.Algorithms
 {
@@ -16,80 +17,101 @@ namespace StegoCore.Algorithms
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
                 throw new DataToBigException("Secret data is to big for embending.");
+            Random r = new Random((settings?.Key ?? string.Empty).GetHashCode());
             using(var pixels = baseImage.Lock())
             {
-                for (int i = 0; i < baseImage.Height; i++)
+                int ind = 0;
+                while(ind < secretBits.Length)
                 {
-                    for (int j = 0; j < baseImage.Width; j++)
-                    {               
-                        int index = (i * baseImage.Width + j) * 2;
-                        if (index >= secretBits.Length - 2)
-                            break;
-                        var pixel = pixels[j, i];
-                        pixel.R = SetLsb(pixel.R, secretBits[index]);
-                        pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
-                        pixels[j, i] = pixel;
-                    }
-                }              
+                    List<Tuple<int,int>> occupied = new List<Tuple<int, int>>();
+                    int width = r.Next(pixels.Width);
+                    int height = r.Next(pixels.Height);
+                    var pair = new Tuple<int,int>(width, height);
+                    if (occupied.Contains(pair))
+                        continue;
+                    occupied.Add(pair);
+                    var pixel = pixels[width, height];
+                    pixel.R = SetLsb(pixel.R, secretBits[ind]);
+                    pixel.B = SetLsb(pixel.B, secretBits[ind + 1]);
+                    pixels[width, height] = pixel;
+                    ind += 2;
+                }
+                
+
+
+
+                // for (int i = 0; i < baseImage.Height; i++)
+                // {
+                //     for (int j = 0; j < baseImage.Width; j++)
+                //     {               
+                //         int index = (i * baseImage.Width + j) * 2;
+                //         if (index >= secretBits.Length - 2)
+                //             break;
+                //         var pixel = pixels[j, i];
+                //         pixel.R = SetLsb(pixel.R, secretBits[index]);
+                //         pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
+                //         pixels[j, i] = pixel;
+                //     }
+                // }              
             }
 
             return baseImage;
         }
 
-        public override byte[] Decode(Image stegoImage, Settings setting)
+        public override byte[] Decode(Image stegoImage, Settings settings)
         {
-            int length  = ReadSecretLength(stegoImage) * 8;
+            int length = ReadSecretLength(stegoImage) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
                 throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
-
-            BitArray bits = new BitArray(length);
-            using(var pixels = stegoImage.Lock())
-            {         
-                for (int i = 0; i < pixels.Height; i++)
-                {
-                    for (int j = 0; j < pixels.Width; j++)
-                    {               
-                        int index = (i * pixels.Width + j) * 2;
-                        if (index < this.SecretDataLength)
-                            continue;
-                        if (index >= length + this.SecretDataLength)
-                            break;
-                        var r = pixels[j, i].R;
-                        var b = pixels[j, i].B;
-                        bool bitR = GetBit(r, 0);
-                        bool bitB = GetBit(b, 0);
-                        bits.Set(index - this.SecretDataLength, bitR);
-                        bits.Set(index + 1 - this.SecretDataLength, bitB);
-                    }
-                }
-            }
+            BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
             return bits.ToByteArray();
         }
 
         public override int ReadSecretLength(Image stegoImage)
         {
-            BitArray lengthBits = new BitArray(this.SecretDataLength);
-            using(var pixels = stegoImage.Lock())
-            {
-                for (int i = 0; i < pixels.Height; i++)
-                {
-                    for (int j = 0; j < pixels.Width; j++)
-                    {               
-                        int index = (i * pixels.Width + j) * 2;
-                        if (index >= lengthBits.Length)
-                            break;
-                        var r = pixels[j, i].R;
-                        var b = pixels[j, i].B;
-                        bool bitR = GetBit(r, 0);
-                        bool bitB = GetBit(b, 0);
-                        lengthBits.Set(index, bitR);
-                        lengthBits.Set(index + 1, bitB);
-                    }
-                }
-            }
+            BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
             byte[] bytes = lengthBits.ToByteArray();
             int length = BitConverter.ToInt32(bytes, 0);
             return length;
+        }
+
+        private BitArray ReadBits(Image stegoImage, int start, int end)
+        {
+            int length = end - start;
+            if (length <= 0)
+                throw new InvalidDataException("end has to be > than start");
+            BitArray bits = new BitArray(length);
+            int index = 0;
+            Random random = new Random((string.Empty).GetHashCode());
+            List<Tuple<int,int>> occupied = new List<Tuple<int, int>>();
+            using (var pixels = stegoImage.Lock())
+            {
+                while (index < end)
+                {
+                    int width = random.Next(stegoImage.Width);
+                    int height = random.Next(stegoImage.Height);
+                    var pair = new Tuple<int,int>(width, height);
+                    if (occupied.Contains(pair))
+                        continue;
+                    occupied.Add(pair);
+                    if (index < start)
+                    {
+                        index += 2;
+                        continue;
+                    }
+                    var pixel = pixels[width, height];
+                    var r = pixel.R;
+                    var b = pixel.B;
+                    bool bitR = GetBit(r, 0);
+                    bool bitB = GetBit(b, 0);
+                    bits.Set(index - start, bitR);
+                    bits.Set(index - start + 1, bitB);
+                    index += 2;
+                }
+
+            }
+            return bits;
+            
         }
 
         private static bool GetBit(byte b, int bitNumber) 
