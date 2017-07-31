@@ -22,7 +22,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void AlgorithmFactory_CreateLsb()
+        public void AlgorithmFactory_CreateLsb_Type_Equals()
         {
             var created = AlgorithmFactory.Create(AlgorithmEnum.Lsb);      
 
@@ -63,7 +63,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void LSB_Embed_SecretDataLength()
+        public void LSB_Embed_And_Decode_SecretDataLength()
         {
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
@@ -75,7 +75,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void ZhaoKoch_Embed_SecretDataLength()
+        public void ZhaoKoch_Embed_And_Decode_SecretDataLength()
         {
             var lsb = AlgorithmFactory.Create(AlgorithmEnum.ZhaoKoch);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
@@ -88,7 +88,7 @@ namespace StegoCoreTests
 
 
         [Fact]
-        public void Lsb_Encrypt_With_Key_Decrypt_Without_key()
+        public void Lsb_Encrypt_With_Key_Decrypt_Without_Key_Should_Throws_Error()
         {
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             using(var stego = new Stego(FileHelper.GetPathToImage()))
@@ -107,7 +107,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void Lsb_Encrypt_With_Key_Decrypt_With_key()
+        public void Lsb_Encrypt_With_Key_Decrypt_With_Key()
         {
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             using(var stego = new Stego(FileHelper.GetPathToImage()))

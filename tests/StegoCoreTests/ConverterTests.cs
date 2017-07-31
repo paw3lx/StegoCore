@@ -8,7 +8,7 @@ namespace StegoCoreTests
     public class ConverterTests
     {
         [Fact]
-        public void BitConverterTest()
+        public void Bit_Convert_Test()
         {
             var stego = new Stego(FileHelper.GetPathToImage());
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
@@ -18,7 +18,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void QuantizationTest()
+        public void Quantization_Dequanitization_Test()
         {
             var matrix = StegoCore.Statics.JPEG.JpegLuminQuantTable;
             float[][] array = new float[8][];
@@ -57,7 +57,7 @@ namespace StegoCoreTests
                 new float[]{ 0, -8, -2, 2, 1, 4, -6, 0 }
             };
         [Fact]
-        public void DctTest()
+        public void Dct_Test()
         {        
             var zk = new ZhaoKoch();
             var output = zk.Dct(inputMatrix);
@@ -74,7 +74,7 @@ namespace StegoCoreTests
         }
 
         [Fact]
-        public void DctInvTest()
+        public void DctInv_Test()
         {
             var zk = new ZhaoKoch();
             var dct = zk.Dct(inputMatrix);
