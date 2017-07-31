@@ -16,7 +16,7 @@ namespace StegoCore.Algorithms
     public class ZhaoKoch : StegoAlgorithm
     {
         private int d;
-        public override Image Embed(Image baseImage, SecretData secret, Settings settings)
+        public override Image Embed(Image baseImage, SecretData secret, Settings settings = null)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
@@ -57,9 +57,9 @@ namespace StegoCore.Algorithms
             return count >= secretLength;
         } 
 
-        public override byte[] Decode(Image stegoImage, Settings settings)
+        public override byte[] Decode(Image stegoImage, Settings settings = null)
         {
-            int length = ReadSecretLength(stegoImage) * 8;
+            int length = ReadSecretLength(stegoImage, settings) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
                 throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
             d = settings?.D ?? 5;
@@ -68,7 +68,7 @@ namespace StegoCore.Algorithms
 
         }
 
-        public override int ReadSecretLength(Image stegoImage)
+        public override int ReadSecretLength(Image stegoImage, Settings settings = null)
         {
             BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
             byte[] bytes = lengthBits.ToByteArray();

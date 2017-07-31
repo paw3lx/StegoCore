@@ -6,11 +6,11 @@ namespace StegoCore.Algorithms
 
     public interface IStegoAlgorithm
     {
-        Image Embed(Image baseImage, SecretData secret, Settings settings);
+        Image Embed(Image baseImage, SecretData secret, Settings settings = null);
 
-        byte[] Decode(Image stegoImage, Settings settings);
+        byte[] Decode(Image stegoImage, Settings settings = null);
 
-        int ReadSecretLength(Image stegoImage);
+        int ReadSecretLength(Image stegoImage, Settings settings = null);
 
         bool EmbedPossible(Image image, int secretLength);
          
@@ -26,7 +26,7 @@ namespace StegoCore.Algorithms
         /// <param name="stegoImage"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract byte[] Decode(Image stegoImage, Settings settings);
+        public abstract byte[] Decode(Image stegoImage, Settings settings = null);
 
         /// <summary>
         /// 
@@ -35,7 +35,7 @@ namespace StegoCore.Algorithms
         /// <param name="secret"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract Image Embed(Image baseImage, SecretData secret, Settings settings);
+        public abstract Image Embed(Image baseImage, SecretData secret, Settings settings = null);
 
         /// <summary>
         /// Checks if embed is possible
@@ -49,7 +49,8 @@ namespace StegoCore.Algorithms
         /// Reads emended secret length in image
         /// </summary>
         /// <param name="stegoImage">Image with emended message</param>
+        /// <param name="settings"></param>
         /// <returns>secret length</returns>
-        public abstract int ReadSecretLength(Image stegoImage);
+        public abstract int ReadSecretLength(Image stegoImage, Settings settings = null);
     }
 }

@@ -12,7 +12,7 @@ namespace StegoCore.Algorithms
 {
     public class Lsb : StegoAlgorithm
     {
-        public override Image Embed(Image baseImage, SecretData secret, Settings settings)
+        public override Image Embed(Image baseImage, SecretData secret, Settings settings = null)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
@@ -35,54 +35,37 @@ namespace StegoCore.Algorithms
                     pixel.B = SetLsb(pixel.B, secretBits[ind + 1]);
                     pixels[width, height] = pixel;
                     ind += 2;
-                }
-                
-
-
-
-                // for (int i = 0; i < baseImage.Height; i++)
-                // {
-                //     for (int j = 0; j < baseImage.Width; j++)
-                //     {               
-                //         int index = (i * baseImage.Width + j) * 2;
-                //         if (index >= secretBits.Length - 2)
-                //             break;
-                //         var pixel = pixels[j, i];
-                //         pixel.R = SetLsb(pixel.R, secretBits[index]);
-                //         pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
-                //         pixels[j, i] = pixel;
-                //     }
-                // }              
+                }            
             }
 
             return baseImage;
         }
 
-        public override byte[] Decode(Image stegoImage, Settings settings)
+        public override byte[] Decode(Image stegoImage, Settings settings = null)
         {
-            int length = ReadSecretLength(stegoImage) * 8;
+            int length = ReadSecretLength(stegoImage, settings) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
                 throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
-            BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
+            BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength, settings?.Key);
             return bits.ToByteArray();
         }
 
-        public override int ReadSecretLength(Image stegoImage)
+        public override int ReadSecretLength(Image stegoImage, Settings settings = null)
         {
-            BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
+            BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength, settings?.Key);
             byte[] bytes = lengthBits.ToByteArray();
             int length = BitConverter.ToInt32(bytes, 0);
             return length;
         }
 
-        private BitArray ReadBits(Image stegoImage, int start, int end)
+        private BitArray ReadBits(Image stegoImage, int start, int end, string key)
         {
             int length = end - start;
             if (length <= 0)
                 throw new InvalidDataException("end has to be > than start");
             BitArray bits = new BitArray(length);
             int index = 0;
-            Random random = new Random((string.Empty).GetHashCode());
+            Random random = new Random((key ?? string.Empty).GetHashCode());
             List<Tuple<int,int>> occupied = new List<Tuple<int, int>>();
             using (var pixels = stegoImage.Lock())
             {
