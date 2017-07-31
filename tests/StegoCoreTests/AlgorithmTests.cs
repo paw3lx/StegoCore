@@ -6,6 +6,8 @@ namespace StegoCoreTests
     using ImageSharp;
     using System;
     using ImageSharp.Formats;
+    using StegoCore;
+    using StegoCore.Exceptions;
 
     public class AlgorithmTests : IDisposable
     {
@@ -67,7 +69,7 @@ namespace StegoCoreTests
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
             var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
-            int readedLength = lsb.ReadSecretLength(imageWithSecret);
+            int readedLength = lsb.ReadSecretLength(imageWithSecret, null);
 
             Assert.Equal(secretDataBytes.Length, readedLength);
         }
@@ -79,13 +81,49 @@ namespace StegoCoreTests
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
             var secretData = new SecretData(secretDataBytes);
             var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
-            int readedLength = lsb.ReadSecretLength(imageWithSecret);
+            int readedLength = lsb.ReadSecretLength(imageWithSecret, null);
             imageWithSecret.Save("out3.jpg");
             Assert.Equal(secretDataBytes.Length, readedLength);
         }
 
-        
 
+        [Fact]
+        public void Lsb_Encrypt_With_Key_Decrypt_Without_key()
+        {
+            var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
+            using(var stego = new Stego(FileHelper.GetPathToImage()))
+            {
+                stego.SetSecretData(fileBytes);
+                stego.SetSettings(new StegoCore.Model.Settings
+                {
+                    Key = "aaa"
+                });
+                var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
+                stego.SetImage(imageWithSecret);
+                stego.SetSettings(null);
+
+                DecodeException ex = Assert.Throws<DecodeException>(() => { stego.Decode(AlgorithmEnum.Lsb); });
+            }
+        }
+
+        [Fact]
+        public void Lsb_Encrypt_With_Key_Decrypt_With_key()
+        {
+            var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
+            using(var stego = new Stego(FileHelper.GetPathToImage()))
+            {
+                stego.SetSecretData(fileBytes);
+                stego.SetSettings(new StegoCore.Model.Settings
+                {
+                    Key = "aaa"
+                });
+                var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
+                stego.SetImage(imageWithSecret);
+                byte[] resultSecret = stego.Decode(AlgorithmEnum.Lsb);
+
+                Assert.Equal(fileBytes, resultSecret);
+            }
+        }
 
         private Image EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
