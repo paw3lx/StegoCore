@@ -5,6 +5,7 @@ namespace StegoCore
     using StegoCore.Algorithms;
     using StegoCore.Extensions;
     using StegoCore.Model;
+    using SixLabors.ImageSharp;
 
     public sealed class Stego : StegoEntry
     {
@@ -67,7 +68,7 @@ namespace StegoCore
         /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
         /// <exception cref="StegoCore.Exceptions.DataToBigException">Thrown if the secred data is to big for embending</exception>
         /// <returns>Image with embeded secret data</returns>
-        public ImageSharp.Image Embed(AlgorithmEnum algorithm)
+        public Image<Rgba32> Embed(AlgorithmEnum algorithm)
         {
             if (this.image == null)
                 throw new System.NullReferenceException("Image cannot be null");
@@ -97,7 +98,7 @@ namespace StegoCore
         /// Sets the image used for emeding or decoding
         /// </summary>
         /// <param name="image">Image to set</param>
-        public void SetImage(ImageSharp.Image image)
+        public void SetImage(Image<Rgba32> image)
         {
             this.image = image;
         }

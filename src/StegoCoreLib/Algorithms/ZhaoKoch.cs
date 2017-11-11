@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
-using ImageSharp;
-using ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Core;
 using StegoCore.Model;
 using StegoCore.Extensions;
@@ -16,48 +16,46 @@ namespace StegoCore.Algorithms
     public class ZhaoKoch : StegoAlgorithm
     {
         private int d;
-        public override Image Embed(Image baseImage, SecretData secret, Settings settings = null)
+        public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
                 throw new DataToBigException("Secret data is to big for embending.");
             d = settings?.D ?? 5;
-            using (var pixels = baseImage.Lock())
+            int width = 0;
+            int height = 0;
+            int index = 0;
+            while (index < secretBits.Length)
             {
-                int width = 0;
-                int height = 0;
-                int index = 0;
-                while (index < secretBits.Length)
+                if (width + 8 > baseImage.Width)
                 {
-                    if (width + 8 > baseImage.Width)
-                    {
-                        height += 8;
-                        width = 0;
-                    }
-                    if (height + 8 >= baseImage.Height)
-                    {
-                        break;
-                    }
-                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
-                    var yMatrix = luminanceMatrix.GetY();
-                    var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
-                    luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
-                    SetLuminance(pixels, luminanceMatrix, width, height);
-                    index++;      
-                    width += 8;
+                    height += 8;
+                    width = 0;
                 }
-
+                if (height + 8 >= baseImage.Height)
+                {
+                    break;
+                }
+                var luminanceMatrix = GetLuminanceMatrix(baseImage, width, height);
+                var yMatrix = luminanceMatrix.GetY();
+                var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
+                luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
+                SetLuminance(baseImage, luminanceMatrix, width, height);
+                index++;
+                width += 8;
             }
+
+
             return baseImage;
         }
 
-        public override bool EmbedPossible(Image image, int secretLength)
+        public override bool EmbedPossible(Image<Rgba32> image, int secretLength)
         {
             int count = (image.Width / 8) * (image.Height / 8);
             return count >= secretLength;
-        } 
+        }
 
-        public override byte[] Decode(Image stegoImage, Settings settings = null)
+        public override byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null)
         {
             int length = ReadSecretLength(stegoImage, settings) * 8;
             if (length <= 0 || !EmbedPossible(stegoImage, length))
@@ -68,7 +66,7 @@ namespace StegoCore.Algorithms
 
         }
 
-        public override int ReadSecretLength(Image stegoImage, Settings settings = null)
+        public override int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null)
         {
             BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
             byte[] bytes = lengthBits.ToByteArray();
@@ -76,46 +74,44 @@ namespace StegoCore.Algorithms
             return length;
         }
 
-        private BitArray ReadBits(Image stegoImage, int start, int end)
+        private BitArray ReadBits(Image<Rgba32> stegoImage, int start, int end)
         {
             int length = end - start;
             if (length <= 0)
                 throw new InvalidDataException("end has to be > than start");
             BitArray bits = new BitArray(length);
-            using(var pixels = stegoImage.Lock())
+            int width = 0;
+            int height = 0;
+            int index = 0;
+            while (index < end)
             {
-                int width = 0;
-                int height = 0;
-                int index = 0;
-                while (index < end)
+                if (width + 8 > stegoImage.Width)
                 {
-                    if (width + 8 > stegoImage.Width)
-                    {
-                        height += 8;
-                        width = 0;
-                    }
-                    if (height + 8 >= stegoImage.Height)
-                    {
-                        break;
-                    }
-                    if (index < start)
-                    {
-                        index++;
-                        width += 8;
-                        continue;
-                    }
-                    var luminanceMatrix = GetLuminanceMatrix(pixels, width, height);
-                    var yMatrix = luminanceMatrix.GetY();
-                    var bit = ReadOneBit(yMatrix, d);
-                    bits.Set(index - start, bit);
+                    height += 8;
+                    width = 0;
+                }
+                if (height + 8 >= stegoImage.Height)
+                {
+                    break;
+                }
+                if (index < start)
+                {
                     index++;
                     width += 8;
+                    continue;
                 }
+                var luminanceMatrix = GetLuminanceMatrix(stegoImage, width, height);
+                var yMatrix = luminanceMatrix.GetY();
+                var bit = ReadOneBit(yMatrix, d);
+                bits.Set(index - start, bit);
+                index++;
+                width += 8;
             }
+
             return bits;
         }
 
-        private PixelLuma[][] GetLuminanceMatrix(PixelAccessor<Rgba32> pixels, int width, int height)
+        private PixelLuma[][] GetLuminanceMatrix(Image<Rgba32> pixels, int width, int height)
         {
             int i, j;
             PixelLuma[][] luminance = new PixelLuma[8][];
@@ -132,7 +128,7 @@ namespace StegoCore.Algorithms
             return luminance;
         }
 
-        private void SetLuminance(PixelAccessor<Rgba32> pixels, PixelLuma[][] luminanceMatrix, int width, int height)
+        private void SetLuminance(Image<Rgba32> pixels, PixelLuma[][] luminanceMatrix, int width, int height)
         {
             int i, j;
             for (i = 0; i < 8; i++)
@@ -158,16 +154,18 @@ namespace StegoCore.Algorithms
             float k = Math.Abs(k1) - Math.Abs(k2);
             if (bit)
             {
-                while (!(Math.Abs(k1) - Math.Abs(k2) < -(d + 5))){
+                while (!(Math.Abs(k1) - Math.Abs(k2) < -(d + 5)))
+                {
                     if (k2 < 0)
                         k2--;
                     if (k2 >= 0)
-                        k2 ++;
+                        k2++;
                 }
             }
             else
             {
-                while (!(Math.Abs(k1) - Math.Abs(k2) > (d + 5))){
+                while (!(Math.Abs(k1) - Math.Abs(k2) > (d + 5)))
+                {
                     if (k1 < 0)
                         k1--;
                     if (k1 >= 0)
@@ -189,7 +187,7 @@ namespace StegoCore.Algorithms
                 return true;
             return false;
         }
-        
+
 
         public float[][] Quantize(float[][] matrix)
         {

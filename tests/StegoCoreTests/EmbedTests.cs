@@ -1,7 +1,7 @@
 namespace StegoCoreTests
 {
     using System.Collections;
-    using ImageSharp;
+    using SixLabors.ImageSharp;
     using StegoCore.Algorithms;
     using Xunit;
     using StegoCore;

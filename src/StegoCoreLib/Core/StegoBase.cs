@@ -1,17 +1,17 @@
 namespace StegoCore.Core
 {
     using System.Collections;
-    using ImageSharp;
+    using SixLabors.ImageSharp;
     using StegoCore.Extensions;
     using StegoCore.Model;
 
     public abstract class StegoBase : IStegoEntry
     {
-        protected Image image;
+        protected Image<Rgba32> image;
         protected SecretData secretData;
         protected Settings settings;
 
-        public Image StegoImage => image;
+        public Image<Rgba32> StegoImage => image;
 
         private bool disposedValue = false; 
 

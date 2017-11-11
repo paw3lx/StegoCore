@@ -3,11 +3,12 @@ namespace StegoCoreTests
     using Xunit;
     using StegoCore.Algorithms;
     using StegoCore.Core;
-    using ImageSharp;
+    using SixLabors.ImageSharp;
     using System;
-    using ImageSharp.Formats;
+    using SixLabors.ImageSharp.Formats.Bmp;
     using StegoCore;
     using StegoCore.Exceptions;
+    using SixLabors.ImageSharp.Formats;
 
     public class AlgorithmTests : IDisposable
     {
@@ -32,19 +33,19 @@ namespace StegoCoreTests
         [Fact]
         public void Lsb_Encrypt_Decrypt_Bmp()
         {
-            Encrypt_Decrypt(AlgorithmEnum.Lsb, new BmpFormat(), this.bmpOutFileName);
+            Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.ImageFormats.Bmp, this.bmpOutFileName);
         }
 
         [Fact]
         public void Lsb_Encrypt_Decrypt_Png()
         {
-            Encrypt_Decrypt(AlgorithmEnum.Lsb, new PngFormat(), this.pngOutFileName);
+            Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.ImageFormats.Png, this.pngOutFileName);
         }
 
         [Fact]
         public void ZhaoKoch_Encrypt_Decrypt_Jpeg()
         {
-            Encrypt_Decrypt(AlgorithmEnum.ZhaoKoch, new JpegFormat(), this.jpgOutFileName);
+            Encrypt_Decrypt(AlgorithmEnum.ZhaoKoch, SixLabors.ImageSharp.ImageFormats.Jpeg, this.jpgOutFileName);
         }
 
         private void Encrypt_Decrypt(AlgorithmEnum alg, IImageFormat imageFormat, string outFileName)
@@ -125,7 +126,7 @@ namespace StegoCoreTests
             }
         }
 
-        private Image EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
+        private Image<Rgba32> EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
         {
             var secretData = new SecretData(secretDataBytes);
             var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData, null);

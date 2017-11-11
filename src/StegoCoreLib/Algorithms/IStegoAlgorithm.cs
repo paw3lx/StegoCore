@@ -1,18 +1,18 @@
 namespace StegoCore.Algorithms
 {
-    using ImageSharp;
+    using SixLabors.ImageSharp;
     using StegoCore.Core;
     using StegoCore.Model;
 
     public interface IStegoAlgorithm
     {
-        Image Embed(Image baseImage, SecretData secret, Settings settings = null);
+        Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null);
 
-        byte[] Decode(Image stegoImage, Settings settings = null);
+        byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null);
 
-        int ReadSecretLength(Image stegoImage, Settings settings = null);
+        int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
 
-        bool EmbedPossible(Image image, int secretLength);
+        bool EmbedPossible(Image<Rgba32> image, int secretLength);
          
     }
 
@@ -26,7 +26,7 @@ namespace StegoCore.Algorithms
         /// <param name="stegoImage"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract byte[] Decode(Image stegoImage, Settings settings = null);
+        public abstract byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null);
 
         /// <summary>
         /// 
@@ -35,7 +35,7 @@ namespace StegoCore.Algorithms
         /// <param name="secret"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public abstract Image Embed(Image baseImage, SecretData secret, Settings settings = null);
+        public abstract Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null);
 
         /// <summary>
         /// Checks if embed is possible
@@ -43,7 +43,7 @@ namespace StegoCore.Algorithms
         /// <param name="image">Image</param>
         /// <param name="secretLength">length of the secret to embed</param>
         /// <returns>possibility of embeding</returns>
-        public abstract bool EmbedPossible(Image image, int secretLength);
+        public abstract bool EmbedPossible(Image<Rgba32> image, int secretLength);
 
         /// <summary>
         /// Reads emended secret length in image
@@ -51,6 +51,6 @@ namespace StegoCore.Algorithms
         /// <param name="stegoImage">Image with emended message</param>
         /// <param name="settings"></param>
         /// <returns>secret length</returns>
-        public abstract int ReadSecretLength(Image stegoImage, Settings settings = null);
+        public abstract int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
     }
 }

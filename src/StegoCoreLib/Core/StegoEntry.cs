@@ -1,7 +1,7 @@
 namespace StegoCore.Core
 {
     using System.IO;
-    using ImageSharp;
+    using SixLabors.ImageSharp;
 
     public class StegoEntry : StegoBase
     {   
@@ -29,7 +29,8 @@ namespace StegoCore.Core
 
         public void SaveImage(MemoryStream stream)
         {
-            image.Save(stream);
+            // TODO : choose encoder based on stream
+            image.Save(stream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
         }
 
         protected void LoadSecretData(string filePath)
