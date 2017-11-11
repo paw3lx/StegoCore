@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>StegoCore</AssemblyName>
     <OutputType>Library</OutputType>
     <PackageId>StegoCore</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <RuntimeFrameworkVersion>1.0.3</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
     <RootNamespace>StegoCore</RootNamespace>
     <VersionPrefix>0.1.1</VersionPrefix>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
