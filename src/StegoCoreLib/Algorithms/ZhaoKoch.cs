@@ -20,7 +20,7 @@ namespace StegoCore.Algorithms
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new DataToBigException("Secret data is to big for embending.");
+                throw new InvalidDataException("Secret data is to big for embending.");
             d = settings?.D ?? 5;
             int width = 0;
             int height = 0;

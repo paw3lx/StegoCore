@@ -16,23 +16,23 @@ namespace StegoCore.Algorithms
         {
             BitArray secretBits = secret.SecretWithLengthBits;
             if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new DataToBigException("Secret data is to big for embending.");
-            Random r = new Random((settings?.Key ?? string.Empty).GetHashCode());
-            int ind = 0;
-            while (ind < secretBits.Length)
+                throw new InvalidDataException("Secret data is to big for embending.");
+            Random random = GetRandomGenenator(settings);
+            int index = 0;
+            while (index < secretBits.Length)
             {
                 List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
-                int width = r.Next(baseImage.Width);
-                int height = r.Next(baseImage.Height);
+                int width = random.Next(baseImage.Width);
+                int height = random.Next(baseImage.Height);
                 var pair = new Tuple<int, int>(width, height);
                 if (occupied.Contains(pair))
                     continue;
                 occupied.Add(pair);
                 var pixel = baseImage[width, height];
-                pixel.R = SetLsb(pixel.R, secretBits[ind]);
-                pixel.B = SetLsb(pixel.B, secretBits[ind + 1]);
+                pixel.R = SetLsb(pixel.R, secretBits[index]);
+                pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
                 baseImage[width, height] = pixel;
-                ind += 2;
+                index += 2;
             }
 
             return baseImage;
@@ -62,7 +62,7 @@ namespace StegoCore.Algorithms
                 throw new InvalidDataException("end has to be > than start");
             BitArray bits = new BitArray(length);
             int index = 0;
-            Random random = new Random((key ?? string.Empty).GetHashCode());
+            Random random = GetRandomGenenator(key);
             List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
             while (index < end)
             {
