@@ -4,9 +4,9 @@ using System.Text;
 
 namespace StegoCore.Statics
 {
-    public class JPEG
+    internal class JPEG
     {
-        public static int[][] JpegLuminQuantTable = {
+        internal static int[][] JpegLuminQuantTable = {
             new int[]{16,  11,  10,  16,  24,  40,  51,  61},
             new int[]{12,  12,  14,  19,  26,  58,  60,  55},
             new int[]{14,  13,  16,  24,  40,  57,  69,  56},

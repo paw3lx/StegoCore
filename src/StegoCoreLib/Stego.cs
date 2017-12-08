@@ -1,12 +1,12 @@
+using System.IO;
+using StegoCore.Core;
+using StegoCore.Algorithms;
+using StegoCore.Extensions;
+using StegoCore.Model;
+using SixLabors.ImageSharp;
+
 namespace StegoCore
 {
-    using System.IO;
-    using Core;
-    using StegoCore.Algorithms;
-    using StegoCore.Extensions;
-    using StegoCore.Model;
-    using SixLabors.ImageSharp;
-
     public sealed class Stego : StegoEntry
     {
         /// <summary>

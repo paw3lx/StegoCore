@@ -1,9 +1,10 @@
+using System;
+
 namespace StegoCore.Exceptions
 {
-    using System;
     public class DataToBigException : Exception
     {
-        public DataToBigException()
+        private DataToBigException()
         {
         }
 

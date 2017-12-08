@@ -19,8 +19,8 @@ namespace StegoCore.Algorithms
         public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
-            if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new DataToBigException("Secret data is to big for embending.");
+            if (IsEmbedPossible(baseImage, secretBits.Length) == false)
+                throw new InvalidDataException("Secret data is to big for embending.");
             d = settings?.D ?? 5;
             int width = 0;
             int height = 0;
@@ -45,11 +45,10 @@ namespace StegoCore.Algorithms
                 width += 8;
             }
 
-
             return baseImage;
         }
 
-        public override bool EmbedPossible(Image<Rgba32> image, int secretLength)
+        public override bool IsEmbedPossible(Image<Rgba32> image, int secretLength)
         {
             int count = (image.Width / 8) * (image.Height / 8);
             return count >= secretLength;
@@ -58,7 +57,7 @@ namespace StegoCore.Algorithms
         public override byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null)
         {
             int length = ReadSecretLength(stegoImage, settings) * 8;
-            if (length <= 0 || !EmbedPossible(stegoImage, length))
+            if (length <= 0 || !IsEmbedPossible(stegoImage, length))
                 throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
             d = settings?.D ?? 5;
             BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
