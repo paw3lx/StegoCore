@@ -32,7 +32,7 @@ namespace StegoCore.Algorithms
         /// <param name="image">Image</param>
         /// <param name="secretLength">length of the secret to embed</param>
         /// <returns>possibility of embeding</returns>
-        public abstract bool EmbedPossible(Image<Rgba32> image, int secretLength);
+        public abstract bool IsEmbedPossible(Image<Rgba32> image, int secretLength);
 
         /// <summary>
         /// Reads emended secret length in image
