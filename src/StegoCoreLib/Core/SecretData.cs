@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Collections;
+
 namespace StegoCore.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Collections;
-
     public class SecretData
     {
         public SecretData(byte[] fileBytes)

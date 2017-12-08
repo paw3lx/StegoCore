@@ -1,6 +1,7 @@
+using System;
+
 namespace StegoCore.Exceptions
 {
-    using System;
     public class DecodeException : Exception
     {
         public DecodeException()

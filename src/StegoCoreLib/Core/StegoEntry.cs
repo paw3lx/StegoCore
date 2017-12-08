@@ -1,8 +1,8 @@
+using System.IO;
+using SixLabors.ImageSharp;
+
 namespace StegoCore.Core
 {
-    using System.IO;
-    using SixLabors.ImageSharp;
-
     public class StegoEntry : StegoBase
     {   
         public StegoEntry(Stream imageStream, Stream secretData)

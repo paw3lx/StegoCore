@@ -1,9 +1,9 @@
+using SixLabors.ImageSharp;
+using StegoCore.Core;
+using StegoCore.Model;
+
 namespace StegoCore.Algorithms
 {
-    using SixLabors.ImageSharp;
-    using StegoCore.Core;
-    using StegoCore.Model;
-
     public interface IStegoAlgorithm
     {
         Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null);
@@ -13,7 +13,6 @@ namespace StegoCore.Algorithms
         int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
 
         bool EmbedPossible(Image<Rgba32> image, int secretLength);
-         
     }
 
     public abstract class StegoAlgorithm : IStegoAlgorithm

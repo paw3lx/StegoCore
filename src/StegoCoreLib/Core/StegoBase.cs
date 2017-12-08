@@ -1,20 +1,18 @@
+using System.Collections;
+using SixLabors.ImageSharp;
+using StegoCore.Extensions;
+using StegoCore.Model;
+
 namespace StegoCore.Core
 {
-    using System.Collections;
-    using SixLabors.ImageSharp;
-    using StegoCore.Extensions;
-    using StegoCore.Model;
-
     public abstract class StegoBase : IStegoEntry
     {
+        private bool disposedValue = false;
         protected Image<Rgba32> image;
         protected SecretData secretData;
         protected Settings settings;
 
         public Image<Rgba32> StegoImage => image;
-
-        private bool disposedValue = false; 
-
         public byte[] SecretDataBytes => secretData?.SecretBits?.ToByteArray();
 
         protected virtual void Dispose(bool disposing)
@@ -25,10 +23,6 @@ namespace StegoCore.Core
                 {
                     image?.Dispose();
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }
@@ -38,19 +32,14 @@ namespace StegoCore.Core
             this.Dispose(true);
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~StegoCoreBase() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
+        ~StegoBase() 
+        {
+            Dispose(false);
+        }
 
-        // This code added to correctly implement the disposable pattern.
         void System.IDisposable.Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
 
     }
