@@ -4,7 +4,7 @@ namespace StegoCore.Exceptions
 {
     public class DataToBigException : Exception
     {
-        public DataToBigException()
+        private DataToBigException()
         {
         }
 

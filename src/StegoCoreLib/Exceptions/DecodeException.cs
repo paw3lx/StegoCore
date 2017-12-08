@@ -4,7 +4,7 @@ namespace StegoCore.Exceptions
 {
     public class DecodeException : Exception
     {
-        public DecodeException()
+        private DecodeException()
         {
         }
 
