@@ -6,7 +6,7 @@ More info about this project on https://pawelskaruz.pl/category/daj-sie-poznac-2
 
 ## Installation
 
-Valit is available on [MyGet](https://www.myget.org/feed/stegocore/package/nuget/StegoCore).
+StegoCore is available on [MyGet](https://www.myget.org/feed/stegocore/package/nuget/StegoCore).
 
 ### Package manager
 ```bash
