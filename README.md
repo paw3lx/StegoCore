@@ -31,7 +31,7 @@ To hide some secret data inside an image do following:
     {
         stego.SetSecretData(fileBytes);
         Image<Rgba32> secretImage = stego.Embed(AlgorithmEnum.Lsb);
-     }
+    }
 ```
 
 Pretty simple, right? :) Now you can save the image with secret. But how to extract secret from image? It's even simpler.
@@ -41,7 +41,7 @@ Pretty simple, right? :) Now you can save the image with secret. But how to extr
     using(var stego = new Stego("secretImage.jpg"))
     {
         byte[] secret = stego.Decode(AlgorithmEnum.Lsb);
-     }
+    }
 ```
 
 Right now there are 2 steganography algorithms implemented:
