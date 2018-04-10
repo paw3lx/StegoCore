@@ -1,8 +1,8 @@
+using System;
+using System.Reflection;
+
 namespace StegoCore.Algorithms
 {
-    using System;
-    using System.Reflection;
-
     public static class AlgorithmFactory
     {
         public static StegoAlgorithm Create(AlgorithmEnum selection)

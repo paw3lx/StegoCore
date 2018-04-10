@@ -15,24 +15,24 @@ namespace StegoCore.Algorithms
         public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
         {
             BitArray secretBits = secret.SecretWithLengthBits;
-            if (EmbedPossible(baseImage, secretBits.Length) == false)
-                throw new DataToBigException("Secret data is to big for embending.");
-            Random r = new Random((settings?.Key ?? string.Empty).GetHashCode());
-            int ind = 0;
-            while (ind < secretBits.Length)
+            if (IsEmbedPossible(baseImage, secretBits.Length) == false)
+                throw new InvalidDataException("Secret data is to big for embending.");
+            Random random = GetRandomGenenator(settings);
+            int index = 0;
+            while (index < secretBits.Length)
             {
                 List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
-                int width = r.Next(baseImage.Width);
-                int height = r.Next(baseImage.Height);
+                int width = random.Next(baseImage.Width);
+                int height = random.Next(baseImage.Height);
                 var pair = new Tuple<int, int>(width, height);
                 if (occupied.Contains(pair))
                     continue;
                 occupied.Add(pair);
                 var pixel = baseImage[width, height];
-                pixel.R = SetLsb(pixel.R, secretBits[ind]);
-                pixel.B = SetLsb(pixel.B, secretBits[ind + 1]);
+                pixel.R = SetLsb(pixel.R, secretBits[index]);
+                pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
                 baseImage[width, height] = pixel;
-                ind += 2;
+                index += 2;
             }
 
             return baseImage;
@@ -41,7 +41,7 @@ namespace StegoCore.Algorithms
         public override byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null)
         {
             int length = ReadSecretLength(stegoImage, settings) * 8;
-            if (length <= 0 || !EmbedPossible(stegoImage, length))
+            if (length <= 0 || !IsEmbedPossible(stegoImage, length))
                 throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
             BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength, settings?.Key);
             return bits.ToByteArray();
@@ -62,7 +62,7 @@ namespace StegoCore.Algorithms
                 throw new InvalidDataException("end has to be > than start");
             BitArray bits = new BitArray(length);
             int index = 0;
-            Random random = new Random((key ?? string.Empty).GetHashCode());
+            Random random = GetRandomGenenator(key);
             List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
             while (index < end)
             {
@@ -78,16 +78,22 @@ namespace StegoCore.Algorithms
                     continue;
                 }
                 var pixel = stegoImage[width, height];
-                var r = pixel.R;
-                var b = pixel.B;
-                bool bitR = GetBit(r, 0);
-                bool bitB = GetBit(b, 0);
+                (bool bitR, bool bitB) = GetBitsFromPixel(pixel);
                 bits.Set(index - start, bitR);
                 bits.Set(index - start + 1, bitB);
                 index += 2;
             }
             return bits;
 
+        }
+
+        private (bool R, bool B) GetBitsFromPixel(Rgba32 pixel)
+        {
+            var r = pixel.R;
+            var b = pixel.B;
+            bool bitR = GetBit(r, 0);
+            bool bitB = GetBit(b, 0);
+            return (bitR, bitB);
         }
 
         private static bool GetBit(byte b, int bitNumber)
@@ -105,7 +111,7 @@ namespace StegoCore.Algorithms
             return ret;
         }
 
-        public override bool EmbedPossible(Image<Rgba32> image, int secretLength)
+        public override bool IsEmbedPossible(Image<Rgba32> image, int secretLength)
         {
             return image.Width * image.Height * 2 >= secretLength;
         }

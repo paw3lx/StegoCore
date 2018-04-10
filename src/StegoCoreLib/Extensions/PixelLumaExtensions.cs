@@ -2,9 +2,9 @@ using StegoCore.Model;
 
 namespace StegoCore.Extensions
 {
-    public static class PixelLumaExtensions
+    internal static class PixelLumaExtensions
     {
-        public static float[][] GetY(this PixelLuma[][] luma)
+        internal static float[][] GetY(this PixelLuma[][] luma)
         {
             float[][] y = new float[luma.Length][];
             int i,j;
@@ -19,7 +19,7 @@ namespace StegoCore.Extensions
             return y;
         }
 
-        public static PixelLuma[][] SetY(this PixelLuma[][] luma, float[][] yMatrix)
+        internal static PixelLuma[][] SetY(this PixelLuma[][] luma, float[][] yMatrix)
         {
             int i,j;
             for (i = 0; i < luma.Length; i++)

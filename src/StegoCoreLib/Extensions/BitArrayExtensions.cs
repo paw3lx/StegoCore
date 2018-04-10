@@ -2,14 +2,14 @@ using System.Collections;
 
 namespace StegoCore.Extensions
 {
-    public static class BitArrayExtensions
+    internal static class BitArrayExtensions
     {
         /// <summary>
         /// Converts BitArray to byte array
         /// </summary>
         /// <param name="bits">BitArray</param>
         /// <returns>representation in byte[]</returns>
-        public static byte[] ToByteArray(this BitArray bits) 
+        internal static byte[] ToByteArray(this BitArray bits) 
         {
             int numBytes = bits.Length / 8;
             if (bits.Length % 8 != 0) numBytes++;

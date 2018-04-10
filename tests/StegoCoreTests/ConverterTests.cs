@@ -17,25 +17,6 @@ namespace StegoCoreTests
             Assert.Equal(fileBytes, resultBytes);
         }
 
-        [Fact]
-        public void Quantization_Dequanitization_Test()
-        {
-            var matrix = StegoCore.Statics.JPEG.JpegLuminQuantTable;
-            float[][] array = new float[8][];
-            for(int i = 0; i < matrix.Length; i++)
-            {
-                array[i] = new float[8];
-                for(int j = 0; j < matrix.Length; j++)
-                {
-                    array[i][j] = matrix[i][j];
-                }
-            }             
-            var zk = new ZhaoKoch();
-            var quantized = zk.Quantize(array);
-            var dequantized = zk.Dequantize(quantized);
-            Assert.Equal(array, dequantized);
-        }
-
         private float[][] inputMatrix = {
                 new float[]{ 140, 144, 147, 140, 140, 155, 179, 175 },
                 new float[]{ 144, 152, 140, 147, 140, 148, 167, 179 },

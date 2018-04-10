@@ -4,7 +4,7 @@ using System.Text;
 
 namespace StegoCore.Model
 {
-    public class PixelLuma
+    internal class PixelLuma
     {
         public PixelLuma(byte r, byte g, byte b)
         {
