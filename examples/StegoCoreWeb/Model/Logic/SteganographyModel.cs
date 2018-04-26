@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
-using ImageSharp;
-using ImageSharp.Formats;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using StegoCore;
@@ -49,16 +49,12 @@ namespace StegoCoreWeb.Model.Logic
                 {
                     stego.SetSecretData(secretBytes);
                     var imageWithSecret = stego.Embed(algorithm);
-                    EncoderOptions options = null;
-                    var formatType = Helpers.FormatHelper.GetFormatByName(format);
-                    if (formatType is JpegFormat)
+                    var formatType = Helpers.FormatHelper.GetEncoderByName(format);
+                    if (formatType is SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder)
                     {
-                        options = new JpegEncoderOptions
-                        {
-                            Quality = 100
-                        };
+                        (formatType as SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder).Quality = 100;
                     }
-                    imageWithSecret.Save(Path.Combine(GetUploadsPath(), embedResult.Guid), formatType, options);
+                    imageWithSecret.Save(Path.Combine(GetUploadsPath(), embedResult.Guid), formatType);
                     embedResult.Success = true;
                     embedResult.Format = userImage.EmbededFormat = format;
                     userImage.EmbededGuid = embedResult.Guid;

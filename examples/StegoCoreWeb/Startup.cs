@@ -36,7 +36,7 @@ namespace StegoCoreWeb
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(1);
-                options.CookieHttpOnly = true;
+                options.Cookie.HttpOnly = true;
             });
 
             services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");

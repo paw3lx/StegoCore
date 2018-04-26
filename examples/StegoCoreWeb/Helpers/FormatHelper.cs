@@ -1,20 +1,20 @@
-using ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats;
 
 namespace StegoCoreWeb.Helpers
 {
     public static class FormatHelper
     {
-        public static IImageFormat GetFormatByName(string format)
+        public static IImageEncoder GetEncoderByName(string format)
         {
             switch(format){
                 case "bmp":
-                    return new BmpFormat();
+                    return new SixLabors.ImageSharp.Formats.Bmp.BmpEncoder();
                 case "png":
-                    return new PngFormat();
+                    return new SixLabors.ImageSharp.Formats.Png.PngEncoder();
                 case "jpeg":
-                    return new JpegFormat();
+                    return new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder();
                 default:
-                    return new BmpFormat();
+                    return new SixLabors.ImageSharp.Formats.Bmp.BmpEncoder();
                 
             }
         }
