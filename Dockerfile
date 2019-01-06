@@ -1,9 +1,8 @@
-FROM microsoft/dotnet:1.0.5-sdk
+FROM microsoft/dotnet:2.0-sdk
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
 COPY src/StegoCoreLib/StegoCoreLib.csproj .
-COPY src/StegoCoreLib/NuGet.config .
 RUN dotnet restore
 
 # copy everything else and build
