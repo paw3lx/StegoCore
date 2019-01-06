@@ -1,21 +1,22 @@
+using Xunit;
+using StegoCore.Algorithms;
+using StegoCore.Core;
+using SixLabors.ImageSharp;
+using System;
+using SixLabors.ImageSharp.Formats.Bmp;
+using StegoCore;
+using StegoCore.Exceptions;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.PixelFormats;
+
 namespace StegoCoreTests
 {
-    using Xunit;
-    using StegoCore.Algorithms;
-    using StegoCore.Core;
-    using SixLabors.ImageSharp;
-    using System;
-    using SixLabors.ImageSharp.Formats.Bmp;
-    using StegoCore;
-    using StegoCore.Exceptions;
-    using SixLabors.ImageSharp.Formats;
-
     public class AlgorithmTests : IDisposable
     {
         private string bmpOutFileName = "out1.bmp";
         private string jpgOutFileName = "out.jpg";
         private string pngOutFileName = "out.png";
-        
+
         public void Dispose()
         {
             //System.IO.File.Delete(bmpOutFileName);
@@ -25,7 +26,7 @@ namespace StegoCoreTests
         [Fact]
         public void AlgorithmFactory_CreateLsb_Type_Equals()
         {
-            var created = AlgorithmFactory.Create(AlgorithmEnum.Lsb);      
+            var created = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
 
             Assert.Equal(typeof(Lsb), created.GetType());
         }
@@ -50,11 +51,11 @@ namespace StegoCoreTests
 
         private void Encrypt_Decrypt(AlgorithmEnum alg, IImageFormat imageFormat, string outFileName)
         {
-            Configuration.Default.AddImageFormat(imageFormat);
+            Configuration.Default.ImageFormatsManager.AddImageFormat(imageFormat);
 
             var algorithm = AlgorithmFactory.Create(alg);
             byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
-            
+
             var notSavedStego = EncryptAndSave(algorithm, secretDataBytes, outFileName);
 
             var stegoImage = Image.Load(outFileName);
@@ -92,7 +93,7 @@ namespace StegoCoreTests
         public void Lsb_Encrypt_With_Key_Decrypt_Without_Key_Should_Throws_Error()
         {
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
-            using(var stego = new Stego(FileHelper.GetPathToImage()))
+            using (var stego = new Stego(FileHelper.GetPathToImage()))
             {
                 stego.SetSecretData(fileBytes);
                 stego.SetSettings(new StegoCore.Model.Settings
@@ -111,7 +112,7 @@ namespace StegoCoreTests
         public void Lsb_Encrypt_With_Key_Decrypt_With_Key()
         {
             var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
-            using(var stego = new Stego(FileHelper.GetPathToImage()))
+            using (var stego = new Stego(FileHelper.GetPathToImage()))
             {
                 stego.SetSecretData(fileBytes);
                 stego.SetSettings(new StegoCore.Model.Settings

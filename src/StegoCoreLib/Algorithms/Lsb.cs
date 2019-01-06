@@ -7,6 +7,7 @@ using StegoCore.Extensions;
 using StegoCore.Exceptions;
 using StegoCore.Model;
 using System.Collections.Generic;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StegoCore.Algorithms
 {

@@ -1,5 +1,6 @@
 using System.Collections;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Extensions;
 using StegoCore.Model;
 

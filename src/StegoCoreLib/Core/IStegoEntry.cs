@@ -1,5 +1,6 @@
 using System;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StegoCore.Core
 {

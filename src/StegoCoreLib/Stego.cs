@@ -4,6 +4,7 @@ using StegoCore.Algorithms;
 using StegoCore.Extensions;
 using StegoCore.Model;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StegoCore
 {

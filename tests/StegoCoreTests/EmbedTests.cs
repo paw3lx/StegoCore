@@ -1,11 +1,10 @@
+using SixLabors.ImageSharp;
+using StegoCore.Algorithms;
+using Xunit;
+using StegoCore;
+
 namespace StegoCoreTests
 {
-    using System.Collections;
-    using SixLabors.ImageSharp;
-    using StegoCore.Algorithms;
-    using Xunit;
-    using StegoCore;
-
     public class EmbedTests
     {
         [Fact]
