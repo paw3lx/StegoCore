@@ -8,11 +8,14 @@
     <PackageId>StegoCore</PackageId>
     <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
     <RootNamespace>StegoCore</RootNamespace>
-    <VersionPrefix>0.3.0</VersionPrefix>
+    <VersionPrefix>0.3.1</VersionPrefix>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <Authors>Pawel Skaruz</Authors>
+    <Company>BetaSoft</Company>
+    <Description>Steganography library for .NET Core</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
   </ItemGroup>
 </Project>
