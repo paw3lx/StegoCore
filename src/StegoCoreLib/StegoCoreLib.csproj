@@ -13,6 +13,11 @@
     <Authors>Pawel Skaruz</Authors>
     <Company>BetaSoft</Company>
     <Description>Steganography library for .NET Core</Description>
+    <PackageTags>Steganography Core</PackageTags>
+    <Product>StegoCore</Product>
+    <PackageProjectUrl>https://github.com/paw3lx/StegoCore</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/paw3lx/StegoCore</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
