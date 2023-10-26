@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>StegoCore</AssemblyName>
     <OutputType>Library</OutputType>
@@ -19,7 +18,6 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/paw3lx/StegoCore</RepositoryUrl>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
   </ItemGroup>
