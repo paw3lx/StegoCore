@@ -1,26 +1,25 @@
 using System;
 using System.Reflection;
 
-namespace StegoCore.Algorithms
+namespace StegoCore.Algorithms;
+
+public static class AlgorithmFactory
 {
-    public static class AlgorithmFactory
+    public static StegoAlgorithm Create(AlgorithmEnum selection)
     {
-        public static StegoAlgorithm Create(AlgorithmEnum selection)
+        var type = Type.GetType(typeof(StegoAlgorithm).Namespace + "." + selection.ToString(), throwOnError: false);
+
+        if (type == null)
         {
-            var type = Type.GetType(typeof(StegoAlgorithm).Namespace + "." + selection.ToString(), throwOnError: false);
-
-            if (type == null)
-            {
-                throw new NullReferenceException(selection.ToString() + " is not a known algorithm type");
-            }
-
-            if (!typeof(StegoAlgorithm).IsAssignableFrom(type))
-            {
-                throw new InvalidOperationException(type.Name + " does not inherit from StegoAlghorithm");
-            }
-
-            return (StegoAlgorithm)Activator.CreateInstance(type);
+            throw new NullReferenceException(selection.ToString() + " is not a known algorithm type");
         }
-        
+
+        if (!typeof(StegoAlgorithm).IsAssignableFrom(type))
+        {
+            throw new InvalidOperationException(type.Name + " does not inherit from StegoAlghorithm");
+        }
+
+        return (StegoAlgorithm)Activator.CreateInstance(type);
     }
+
 }

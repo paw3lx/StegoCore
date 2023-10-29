@@ -1,21 +1,20 @@
 using System;
 
-namespace StegoCore.Exceptions
+namespace StegoCore.Exceptions;
+
+public class DecodeException : Exception
 {
-    public class DecodeException : Exception
+    private DecodeException()
     {
-        private DecodeException()
-        {
-        }
+    }
 
-        public DecodeException(string message)
-            : base(message)
-        {
-        }
+    public DecodeException(string message)
+        : base(message)
+    {
+    }
 
-        public DecodeException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public DecodeException(string message, Exception inner)
+        : base(message, inner)
+    {
     }
 }

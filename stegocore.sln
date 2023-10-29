@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoCoreLib", "src\StegoCoreLib\StegoCoreLib.csproj", "{3BEE8633-FAA8-44F3-85AC-5ACED7976C62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoCoreLib", "src\StegoCoreLib\StegoCoreLib.csproj", "{3BEE8633-FAA8-44F3-85AC-5ACED7976C62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoCoreWeb", "examples\StegoCoreWeb\StegoCoreWeb.csproj", "{F39CDDBF-F4EE-48E5-A6F6-8B84B7D64DED}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoCoreTests", "tests\StegoCoreTests\StegoCoreTests.csproj", "{76150ECC-C19E-4694-86DB-B3E52C5A9D75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoCoreTests", "tests\StegoCoreTests\StegoCoreTests.csproj", "{76150ECC-C19E-4694-86DB-B3E52C5A9D75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{3BEE8633-FAA8-44F3-85AC-5ACED7976C62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BEE8633-FAA8-44F3-85AC-5ACED7976C62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BEE8633-FAA8-44F3-85AC-5ACED7976C62}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F39CDDBF-F4EE-48E5-A6F6-8B84B7D64DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F39CDDBF-F4EE-48E5-A6F6-8B84B7D64DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F39CDDBF-F4EE-48E5-A6F6-8B84B7D64DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F39CDDBF-F4EE-48E5-A6F6-8B84B7D64DED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Release|Any CPU.ActiveCfg = Release|Any CPU

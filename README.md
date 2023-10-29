@@ -1,6 +1,6 @@
 StegoCore is steganography library for .NET Core. Hide secret data inside images using many algorithms.
 
-[![Build Status](https://travis-ci.org/paw3lx/StegoCore.svg?branch=master)](https://travis-ci.org/paw3lx/StegoCore)
+[![Build and Test](https://github.com/paw3lx/StegoCore/actions/workflows/ci-build-and-test.yml/badge.svg?branch=master)](https://github.com/paw3lx/StegoCore/actions/workflows/ci-build-and-test.yml)
 
 More info about this project on https://pawelskaruz.pl/category/daj-sie-poznac-2017/
 

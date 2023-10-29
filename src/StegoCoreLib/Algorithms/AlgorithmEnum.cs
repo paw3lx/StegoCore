@@ -1,8 +1,7 @@
-namespace StegoCore.Algorithms
+namespace StegoCore.Algorithms;
+
+public enum AlgorithmEnum
 {
-    public enum AlgorithmEnum
-    {
-        Lsb = 0,
-        ZhaoKoch = 1
-    }
+    Lsb = 0,
+    ZhaoKoch = 1
 }
