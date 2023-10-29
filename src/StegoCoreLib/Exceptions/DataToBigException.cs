@@ -1,21 +1,20 @@
 using System;
 
-namespace StegoCore.Exceptions
+namespace StegoCore.Exceptions;
+
+public class DataToBigException : Exception
 {
-    public class DataToBigException : Exception
+    private DataToBigException()
     {
-        private DataToBigException()
-        {
-        }
+    }
 
-        public DataToBigException(string message)
-            : base(message)
-        {
-        }
+    public DataToBigException(string message)
+        : base(message)
+    {
+    }
 
-        public DataToBigException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public DataToBigException(string message, Exception inner)
+        : base(message, inner)
+    {
     }
 }
