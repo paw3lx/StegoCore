@@ -36,11 +36,11 @@ public class AlgorithmTests : IDisposable
         Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Bmp.BmpFormat.Instance, this.bmpOutFileName);
     }
 
-    // [Fact]
-    // public void Lsb_Encrypt_Decrypt_Png()
-    // {
-    //     Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Png.PngFormat.Instance, this.pngOutFileName);
-    // }
+    [Fact]
+    public void Lsb_Encrypt_Decrypt_Png()
+    {
+        Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Png.PngFormat.Instance, this.pngOutFileName);
+    }
 
     [Fact]
     public void ZhaoKoch_Encrypt_Decrypt_Jpeg()

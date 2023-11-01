@@ -18,6 +18,7 @@ public class Lsb : StegoAlgorithm
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
             throw new InvalidDataException("Secret data is to big for embending.");
+        
         Random random = GetRandomGenenator(settings);
         int index = 0;
         while (index < secretBits.Length)
@@ -29,7 +30,7 @@ public class Lsb : StegoAlgorithm
             if (occupied.Contains(pair))
                 continue;
             occupied.Add(pair);
-            var pixel = baseImage[width, height];
+            Rgba32 pixel = baseImage[width, height];
             pixel.R = SetLsb(pixel.R, secretBits[index]);
             pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
             baseImage[width, height] = pixel;
@@ -64,7 +65,7 @@ public class Lsb : StegoAlgorithm
         BitArray bits = new BitArray(length);
         int index = 0;
         Random random = GetRandomGenenator(key);
-        List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
+        List<Tuple<int, int>> occupied = new();
         while (index < end)
         {
             int width = random.Next(stegoImage.Width);
@@ -78,7 +79,7 @@ public class Lsb : StegoAlgorithm
                 index += 2;
                 continue;
             }
-            var pixel = stegoImage[width, height];
+            Rgba32 pixel = stegoImage[width, height];
             (bool bitR, bool bitB) = GetBitsFromPixel(pixel);
             bits.Set(index - start, bitR);
             bits.Set(index - start + 1, bitB);
@@ -90,8 +91,8 @@ public class Lsb : StegoAlgorithm
 
     private (bool R, bool B) GetBitsFromPixel(Rgba32 pixel)
     {
-        var r = pixel.R;
-        var b = pixel.B;
+        byte r = pixel.R;
+        byte b = pixel.B;
         bool bitR = GetBit(r, 0);
         bool bitB = GetBit(b, 0);
         return (bitR, bitB);
@@ -104,7 +105,7 @@ public class Lsb : StegoAlgorithm
 
     private static byte SetLsb(byte b, bool value)
     {
-        byte ret = b;
+        byte ret;
         if (value)
             ret = (byte)(b | 1);     // Make LSB 1
         else

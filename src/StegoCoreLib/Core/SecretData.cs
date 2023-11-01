@@ -9,25 +9,19 @@ public class SecretData
 {
     public SecretData(byte[] fileBytes)
     {
-        this.fileBytes = fileBytes;
-        this.fileLength = fileBytes.Length;
-        var lengthBytes = BitConverter.GetBytes(this.fileLength); // length 4 = 32 bits
-        secretWithLength = lengthBytes.Concat(fileBytes);
+        FileBytes = fileBytes;
+        FileLength = fileBytes.Length;
+        byte[] lengthBytes = BitConverter.GetBytes(this.FileLength); // length 4 = 32 bits
+        FileWithLengthBytes = lengthBytes.Concat(fileBytes);
     }
 
-    private byte[] fileBytes;
-    private int fileLength;
-    private IEnumerable<byte> secretWithLength;
+    public int FileLength { get; }
 
-    public int FileLength => fileLength;
-    public byte[] FileBytes => fileBytes;
-    public IEnumerable<byte> FileWithLengthBytes => secretWithLength;
+    public byte[] FileBytes { get; }
 
-    public BitArray SecretWithLengthBits => new BitArray(secretWithLength.ToArray());
+    public IEnumerable<byte> FileWithLengthBytes { get; }
 
-    public BitArray SecretBits => new BitArray(fileBytes);
+    public BitArray SecretWithLengthBits => new(FileWithLengthBytes.ToArray());
 
-
-
-
+    public BitArray SecretBits => new(FileBytes);
 }

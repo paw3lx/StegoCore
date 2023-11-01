@@ -3,7 +3,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Algorithms;
 using StegoCore.Core;
-using StegoCore.Extensions;
 using StegoCore.Model;
 
 namespace StegoCore;
@@ -71,11 +70,11 @@ public sealed class Stego : StegoEntry
     /// <returns>Image with embeded secret data</returns>
     public Image<Rgba32> Embed(AlgorithmEnum algorithm)
     {
-        if (this.image == null)
+        if (image == null)
             throw new System.NullReferenceException("Image cannot be null");
-        if (this.secretData == null)
+        if (secretData == null)
             throw new System.NullReferenceException("Secret data cannot be null");
-        var alg = AlgorithmFactory.Create(algorithm);
+        StegoAlgorithm alg = AlgorithmFactory.Create(algorithm);
         return alg.Embed(this.image, this.secretData, this.settings);
     }
 
@@ -89,10 +88,10 @@ public sealed class Stego : StegoEntry
     /// <returns>Bytes of decoded secred data</returns>
     public byte[] Decode(AlgorithmEnum algorithm)
     {
-        if (this.image == null)
+        if (image == null)
             throw new System.NullReferenceException("Image cannot be null");
-        var alg = AlgorithmFactory.Create(algorithm);
-        return alg.Decode(this.image, this.settings);
+        StegoAlgorithm alg = AlgorithmFactory.Create(algorithm);
+        return alg.Decode(image, settings);
     }
 
     /// <summary>

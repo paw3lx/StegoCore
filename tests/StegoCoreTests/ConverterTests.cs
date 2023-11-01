@@ -41,7 +41,7 @@ public class ConverterTests
     public void Dct_Test()
     {
         var zk = new ZhaoKoch();
-        var output = zk.Dct(inputMatrix);
+        var output = ZhaoKoch.Dct(inputMatrix);
         var result = new float[8][];
         for (int i = 0; i < result.Length; i++)
         {
@@ -58,8 +58,8 @@ public class ConverterTests
     public void DctInv_Test()
     {
         var zk = new ZhaoKoch();
-        var dct = zk.Dct(inputMatrix);
-        var output = zk.DctInv(dct);
+        var dct = ZhaoKoch.Dct(inputMatrix);
+        var output = ZhaoKoch.DctInv(dct);
         var result = new float[8][];
         for (int i = 0; i < result.Length; i++)
         {

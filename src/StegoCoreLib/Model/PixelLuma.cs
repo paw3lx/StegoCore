@@ -1,55 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StegoCore.Model;
+﻿namespace StegoCore.Model;
 
 internal class PixelLuma
 {
     public PixelLuma(byte r, byte g, byte b)
     {
-        _r = r;
-        _g = g;
-        _b = b;
+        R = r;
+        G = g;
+        B = b;
         Calculate();
     }
 
     public PixelLuma(float y, float cb, float cr)
     {
-        _y = y;
-        _cb = cb;
-        _cr = cr;
+        Y = y;
+        Cb = cb;
+        Cr = cr;
         Decalculate();
     }
 
-    public float Y => _y;
+    public float Y { get; private set; }
 
-    public float Cb => _cb;
+    public float Cb { get; private set; }
 
-    public float Cr => _cr;
+    public float Cr { get; private set; }
 
-    public byte R => _r;
+    public byte R { get; private set; }
 
-    public byte G => _g;
+    public byte G { get; private set; }
 
-    public byte B => _b;
-
-    private byte _r, _g, _b;
-    private float _y, _cb, _cr;
+    public byte B { get; private set; }
 
     private void Calculate()
     {
-        _y = (float)(0.299 * _r + 0.587 * _g + 0.114 * _b);
-        _cb = (float)(-0.168736 * _r - 0.331264 * _g + 0.5 * _b + 128);
-        _cr = (float)(0.5 * _r - 0.418688 * _g - 0.081312 * _b + 128);
+        Y = (float)(0.299 * R + 0.587 * G + 0.114 * B);
+        Cb = (float)(-0.168736 * R - 0.331264 * G + 0.5 * B + 128);
+        Cr = (float)(0.5 * R - 0.418688 * G - 0.081312 * B + 128);
     }
 
     private void Decalculate()
     {
-        _r = (byte)(_y + 1.402 * (_cr - 128));
-        _g = (byte)(_y - 0.34414 * (_cb - 128) - 0.71414 * (_cr - 128));
-        _b = (byte)(_y + 1.772 * (_cb - 128));
+        R = (byte)(Y + 1.402 * (Cr - 128));
+        G = (byte)(Y - 0.34414 * (Cb - 128) - 0.71414 * (Cr - 128));
+        B = (byte)(Y + 1.772 * (Cb - 128));
     }
-
-
 }
