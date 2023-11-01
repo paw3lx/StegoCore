@@ -1,19 +1,18 @@
-using StegoCore;
 using System;
+using StegoCore;
 using Xunit;
 
-namespace StegoCoreTests
+namespace StegoCoreTests;
+
+public class EntryTests
 {
-    public class EntryTests
+    [Fact]
+    public void ConstructorFileSystem_FileNotFound()
     {
-        [Fact]
-        public void ConstructorFileSystem_FileNotFound()
-        {
-            System.IO.FileNotFoundException ex = Assert.Throws<System.IO.FileNotFoundException>(
-                () =>
-                {
-                    new Stego(Guid.NewGuid().ToString());
-                });
-        }
+        System.IO.FileNotFoundException ex = Assert.Throws<System.IO.FileNotFoundException>(
+            () =>
+            {
+                new Stego(Guid.NewGuid().ToString());
+            });
     }
 }
