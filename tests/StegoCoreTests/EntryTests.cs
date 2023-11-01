@@ -1,6 +1,6 @@
-using Xunit;
 using StegoCore;
 using System;
+using Xunit;
 
 namespace StegoCoreTests
 {

@@ -11,7 +11,7 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     protected int SecretDataLength = 32;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="stegoImage"></param>
     /// <param name="settings"></param>
@@ -19,7 +19,7 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     public abstract byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="baseImage"></param>
     /// <param name="secret"></param>

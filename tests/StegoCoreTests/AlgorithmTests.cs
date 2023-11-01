@@ -1,14 +1,12 @@
-using Xunit;
-using StegoCore.Algorithms;
-using StegoCore.Core;
 using SixLabors.ImageSharp;
-using System;
-using SixLabors.ImageSharp.Formats.Bmp;
-using StegoCore;
-using StegoCore.Exceptions;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats.Png;
+using StegoCore;
+using StegoCore.Algorithms;
+using StegoCore.Core;
+using StegoCore.Exceptions;
+using System;
+using Xunit;
 
 namespace StegoCoreTests
 {

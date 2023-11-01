@@ -1,7 +1,7 @@
-using System;
-using Xunit;
 using StegoCore;
 using StegoCore.Algorithms;
+using System;
+using Xunit;
 
 namespace StegoCoreTests
 {
@@ -39,14 +39,14 @@ namespace StegoCoreTests
             };
         [Fact]
         public void Dct_Test()
-        {        
+        {
             var zk = new ZhaoKoch();
             var output = zk.Dct(inputMatrix);
             var result = new float[8][];
-            for(int i = 0; i< result.Length; i++)
+            for (int i = 0; i < result.Length; i++)
             {
                 result[i] = new float[8];
-                for(int j = 0; j < result.Length; j++)
+                for (int j = 0; j < result.Length; j++)
                 {
                     result[i][j] = (float)Math.Round(output[i][j], 0);
                 }
@@ -61,10 +61,10 @@ namespace StegoCoreTests
             var dct = zk.Dct(inputMatrix);
             var output = zk.DctInv(dct);
             var result = new float[8][];
-            for(int i = 0; i< result.Length; i++)
+            for (int i = 0; i < result.Length; i++)
             {
                 result[i] = new float[8];
-                for(int j = 0; j < result.Length; j++)
+                for (int j = 0; j < result.Length; j++)
                 {
                     result[i][j] = (float)Math.Round(output[i][j], 0);
                 }
