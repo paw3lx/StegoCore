@@ -1,5 +1,6 @@
 using System.IO;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StegoCore.Core;
 
@@ -7,19 +8,19 @@ public class StegoEntry : StegoBase
 {
     public StegoEntry(Stream imageStream, Stream secretData)
     {
-        image = Image.Load(imageStream);
+        image = Image.Load<Rgba32>(imageStream);
         this.LoadSecretData(secretData);
     }
 
     public StegoEntry(string imagePath)
     {
-        image = Image.Load(imagePath);
+        image = Image.Load<Rgba32>(imagePath);
 
     }
 
     public StegoEntry(byte[] imageBytes)
     {
-        image = Image.Load(imageBytes);
+        image = Image.Load<Rgba32>(imageBytes);
     }
 
     public void SaveImage(string path)
