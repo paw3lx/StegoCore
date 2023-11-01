@@ -1,27 +1,30 @@
+# What is StegoCore
+
 StegoCore is steganography library for .NET Core. Hide secret data inside images using many algorithms.
 
 [![Build and Test](https://github.com/paw3lx/StegoCore/actions/workflows/ci-build-and-test.yml/badge.svg?branch=master)](https://github.com/paw3lx/StegoCore/actions/workflows/ci-build-and-test.yml)
 
-More info about this project on https://pawelskaruz.pl/category/daj-sie-poznac-2017/
+More info about this project on <https://pawelskaruz.pl/category/daj-sie-poznac-2017/>
 
 ## Installation
 
 StegoCore is available on [nuget](https://www.nuget.org/packages/StegoCore/) and [MyGet (dev build)](https://www.myget.org/feed/stegocore/package/nuget/StegoCore).
 
-
 ### Package manager
+
 ```bash
 Install-Package StegoCore -Version 0.3.1
 ```
 
 ### .NET CLI
+
 ```bash
 dotnet add package StegoCore --version 0.3.1
 ```
 
 ## Getting started
- 
-StegoCore is using ImaheSharp as image processing library. 
+
+StegoCore is using ImaheSharp as image processing library.
 
 To hide some secret data inside an image do following:
 
@@ -44,6 +47,7 @@ using(var stego = new Stego("secretImage.jpg"))
 ```
 
 Right now there are 2 steganography algorithms implemented:
+
 - LSB (least significant bit)
 - Zhao & Koch (algorithm based on DCT)
 
