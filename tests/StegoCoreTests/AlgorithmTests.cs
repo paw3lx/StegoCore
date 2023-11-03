@@ -36,11 +36,11 @@ public class AlgorithmTests : IDisposable
         Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Bmp.BmpFormat.Instance, this.bmpOutFileName);
     }
 
-    // [Fact]
-    // public void Lsb_Encrypt_Decrypt_Png()
-    // {
-    //     Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Png.PngFormat.Instance, this.pngOutFileName);
-    // }
+    [Fact]
+    public void Lsb_Encrypt_Decrypt_Png()
+    {
+        Encrypt_Decrypt(AlgorithmEnum.Lsb, SixLabors.ImageSharp.Formats.Png.PngFormat.Instance, this.pngOutFileName);
+    }
 
     [Fact]
     public void ZhaoKoch_Encrypt_Decrypt_Jpeg()
@@ -69,7 +69,7 @@ public class AlgorithmTests : IDisposable
         var lsb = AlgorithmFactory.Create(AlgorithmEnum.Lsb);
         byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
         var secretData = new SecretData(secretDataBytes);
-        var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
+        var imageWithSecret = lsb.Embed(Image.Load<Rgba32>(FileHelper.GetPathToImage()), secretData, null);
         int readedLength = lsb.ReadSecretLength(imageWithSecret, null);
 
         Assert.Equal(secretDataBytes.Length, readedLength);
@@ -81,7 +81,7 @@ public class AlgorithmTests : IDisposable
         var lsb = AlgorithmFactory.Create(AlgorithmEnum.ZhaoKoch);
         byte[] secretDataBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
         var secretData = new SecretData(secretDataBytes);
-        var imageWithSecret = lsb.Embed(Image.Load(FileHelper.GetPathToImage()), secretData, null);
+        var imageWithSecret = lsb.Embed(Image.Load<Rgba32>(FileHelper.GetPathToImage()), secretData, null);
         int readedLength = lsb.ReadSecretLength(imageWithSecret, null);
         imageWithSecret.Save("out3.jpg");
         Assert.Equal(secretDataBytes.Length, readedLength);
@@ -129,7 +129,7 @@ public class AlgorithmTests : IDisposable
     private Image<Rgba32> EncryptAndSave(StegoAlgorithm algorithm, byte[] secretDataBytes, string fileName)
     {
         var secretData = new SecretData(secretDataBytes);
-        var result = algorithm.Embed(Image.Load(FileHelper.GetPathToImage("sky.jpg")), secretData, null);
+        var result = algorithm.Embed(Image.Load<Rgba32>(FileHelper.GetPathToImage("sky.jpg")), secretData, null);
         result.Save(fileName);
         return result;
     }

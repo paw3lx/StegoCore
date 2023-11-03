@@ -1,4 +1,3 @@
-using System.Collections;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Extensions;
@@ -8,7 +7,7 @@ namespace StegoCore.Core;
 
 public abstract class StegoBase : IStegoEntry
 {
-    private bool disposedValue = false;
+    private bool _disposedValue = false;
     protected Image<Rgba32> image;
     protected SecretData secretData;
     protected Settings settings;
@@ -18,13 +17,13 @@ public abstract class StegoBase : IStegoEntry
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
                 image?.Dispose();
             }
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 
@@ -42,5 +41,4 @@ public abstract class StegoBase : IStegoEntry
     {
         Dispose(true);
     }
-
 }

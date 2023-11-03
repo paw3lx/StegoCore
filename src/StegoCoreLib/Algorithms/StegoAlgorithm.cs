@@ -43,12 +43,12 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     /// <returns>secret length</returns>
     public abstract int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
 
-    internal Random GetRandomGenenator(Settings settings)
+    internal static Random GetRandomGenenator(Settings settings)
     {
         return GetRandomGenenator(settings?.Key);
     }
 
-    internal Random GetRandomGenenator(string seed)
+    internal static Random GetRandomGenenator(string seed)
     {
         return new Random((seed ?? string.Empty).GetHashCode());
     }

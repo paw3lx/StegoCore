@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Core;
@@ -15,13 +12,13 @@ namespace StegoCore.Algorithms;
 
 public class ZhaoKoch : StegoAlgorithm
 {
-    private int d;
+    private int _d;
     public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
     {
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
             throw new InvalidDataException("Secret data is to big for embending.");
-        d = settings?.D ?? 5;
+        _d = settings?.D ?? 5;
         int width = 0;
         int height = 0;
         int index = 0;
@@ -36,9 +33,9 @@ public class ZhaoKoch : StegoAlgorithm
             {
                 break;
             }
-            var luminanceMatrix = GetLuminanceMatrix(baseImage, width, height);
-            var yMatrix = luminanceMatrix.GetY();
-            var matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), d);
+            PixelLuma[][] luminanceMatrix = GetLuminanceMatrix(baseImage, width, height);
+            float[][] yMatrix = luminanceMatrix.GetY();
+            float[][] matrixWithBit = InsertOneBit(yMatrix, secretBits.Get(index), _d);
             luminanceMatrix = luminanceMatrix.SetY(matrixWithBit);
             SetLuminance(baseImage, luminanceMatrix, width, height);
             index++;
@@ -59,7 +56,7 @@ public class ZhaoKoch : StegoAlgorithm
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
             throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
-        d = settings?.D ?? 5;
+        _d = settings?.D ?? 5;
         BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
         return bits.ToByteArray();
 
@@ -99,9 +96,9 @@ public class ZhaoKoch : StegoAlgorithm
                 width += 8;
                 continue;
             }
-            var luminanceMatrix = GetLuminanceMatrix(stegoImage, width, height);
-            var yMatrix = luminanceMatrix.GetY();
-            var bit = ReadOneBit(yMatrix, d);
+            PixelLuma[][] luminanceMatrix = GetLuminanceMatrix(stegoImage, width, height);
+            float[][] yMatrix = luminanceMatrix.GetY();
+            bool bit = ReadOneBit(yMatrix, _d);
             bits.Set(index - start, bit);
             index++;
             width += 8;
@@ -110,7 +107,7 @@ public class ZhaoKoch : StegoAlgorithm
         return bits;
     }
 
-    private PixelLuma[][] GetLuminanceMatrix(Image<Rgba32> pixels, int width, int height)
+    private static PixelLuma[][] GetLuminanceMatrix(Image<Rgba32> pixels, int width, int height)
     {
         int i, j;
         PixelLuma[][] luminance = new PixelLuma[8][];
@@ -119,23 +116,23 @@ public class ZhaoKoch : StegoAlgorithm
             luminance[i] = new PixelLuma[8];
             for (j = 0; j < 8; j++)
             {
-                var pixel = pixels[width + i, height + j];
-                PixelLuma luma = new PixelLuma(pixel.R, pixel.G, pixel.B);
+                Rgba32 pixel = pixels[width + i, height + j];
+                PixelLuma luma = new(pixel.R, pixel.G, pixel.B);
                 luminance[i][j] = luma;
             }
         }
         return luminance;
     }
 
-    private void SetLuminance(Image<Rgba32> pixels, PixelLuma[][] luminanceMatrix, int width, int height)
+    private static void SetLuminance(Image<Rgba32> pixels, PixelLuma[][] luminanceMatrix, int width, int height)
     {
         int i, j;
         for (i = 0; i < 8; i++)
         {
             for (j = 0; j < 8; j++)
             {
-                var pixel = pixels[width + i, height + j];
-                var luma = luminanceMatrix[i][j];
+                Rgba32 pixel = pixels[width + i, height + j];
+                PixelLuma luma = luminanceMatrix[i][j];
                 pixel.R = luma.R;
                 pixel.G = luma.G;
                 pixel.B = luma.B;
@@ -146,7 +143,7 @@ public class ZhaoKoch : StegoAlgorithm
 
     public float[][] InsertOneBit(float[][] matrix, bool bit, float d)
     {
-        float[][] quantizeMatrix = (Dct(matrix));
+        float[][] quantizeMatrix = Dct(matrix);
 
         float k1 = quantizeMatrix[3][4];
         float k2 = quantizeMatrix[4][3];
@@ -173,13 +170,13 @@ public class ZhaoKoch : StegoAlgorithm
         }
         quantizeMatrix[3][4] = k1;
         quantizeMatrix[4][3] = k2;
-        float[][] outMatrix = DctInv((quantizeMatrix));
+        float[][] outMatrix = DctInv(quantizeMatrix);
         return outMatrix;
     }
 
     private bool ReadOneBit(float[][] matrix, float d)
     {
-        float[][] quantized = (Dct(matrix));
+        float[][] quantized = Dct(matrix);
         float k1 = quantized[3][4];
         float k2 = quantized[4][3];
         if (Math.Abs(k1) - Math.Abs(k2) < -d)
@@ -187,44 +184,7 @@ public class ZhaoKoch : StegoAlgorithm
         return false;
     }
 
-
-    public float[][] Quantize(float[][] matrix)
-    {
-        if (matrix.Length != 8 || matrix.Any(x => x.Length != 8))
-            throw new InvalidDataException("Matrix width and height are not equal 8");
-        int i, j;
-
-        float[][] quantizeMatrix = new float[8][];
-        for (i = 0; i < 8; i++)
-        {
-            quantizeMatrix[i] = new float[8];
-            for (j = 0; j < 8; j++)
-            {
-                quantizeMatrix[i][j] = matrix[i][j] / Statics.JPEG.JpegLuminQuantTable[i][j];
-            }
-        }
-        return quantizeMatrix;
-    }
-
-    public float[][] Dequantize(float[][] quantizedMatrix)
-    {
-        if (quantizedMatrix.Length != 8 || quantizedMatrix.Any(x => x.Length != 8))
-            throw new InvalidDataException("Matrix width and height are not equal 8");
-        int i, j;
-
-        float[][] matrix = new float[8][];
-        for (i = 0; i < 8; i++)
-        {
-            matrix[i] = new float[8];
-            for (j = 0; j < 8; j++)
-            {
-                matrix[i][j] = quantizedMatrix[i][j] * Statics.JPEG.JpegLuminQuantTable[i][j];
-            }
-        }
-        return matrix;
-    }
-
-    public float[][] Dct(float[][] baseMatrix)
+    public static float[][] Dct(float[][] baseMatrix)
     {
         if (baseMatrix.Length != baseMatrix[0].Length)
             throw new InvalidDataException("Matrix width and height are different");
@@ -263,7 +223,7 @@ public class ZhaoKoch : StegoAlgorithm
         return dctMatrix;
     }
 
-    public float[][] DctInv(float[][] dct)
+    public static float[][] DctInv(float[][] dct)
     {
         if (dct.Length != dct[0].Length)
             throw new InvalidDataException("Matrix width and height are different");
@@ -284,8 +244,8 @@ public class ZhaoKoch : StegoAlgorithm
                     for (v = 0; v < length; v++)
                     {
                         var t = dct[u][v] * (float)Math.Cos(u * (x + 0.5) * Math.PI / 8) * (float)Math.Cos(v * (y + 0.5) * Math.PI / 8);
-                        if (u == 0) t *= (1 / (float)Math.Sqrt(2));
-                        if (v == 0) t *= (1 / (float)Math.Sqrt(2));
+                        if (u == 0) t *= 1 / (float)Math.Sqrt(2);
+                        if (v == 0) t *= 1 / (float)Math.Sqrt(2);
                         ammount += t;
                     }
                 }
