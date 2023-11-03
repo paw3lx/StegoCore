@@ -18,7 +18,6 @@ public class Lsb : StegoAlgorithm
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
             throw new InvalidDataException("Secret data is to big for embending.");
-        
         Random random = GetRandomGenenator(settings);
         int index = 0;
         while (index < secretBits.Length)

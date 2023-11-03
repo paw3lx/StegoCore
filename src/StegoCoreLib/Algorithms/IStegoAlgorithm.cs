@@ -12,6 +12,6 @@ public interface IStegoAlgorithm
     byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null);
 
     int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
-    
+
     bool IsEmbedPossible(Image<Rgba32> image, int secretLength);
 }
