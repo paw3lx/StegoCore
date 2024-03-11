@@ -19,6 +19,6 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          FILTER_REGEX_EXCLUDE: .*tests/.*|.*\.csproj|.*\.sln
+          FILTER_REGEX_EXCLUDE: .*tests/.*|.*\.csproj|.*\.sln|.*\.min.css
           DEFAULT_BRANCH: "master"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
