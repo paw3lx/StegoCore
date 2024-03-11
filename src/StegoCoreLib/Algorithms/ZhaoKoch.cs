@@ -13,12 +13,12 @@ namespace StegoCore.Algorithms;
 public class ZhaoKoch : StegoAlgorithm
 {
     private int _d;
-    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
+    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings settings = null)
     {
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
             throw new InvalidDataException("Secret data is to big for embending.");
-        _d = settings?.D ?? 5;
+        _d = settings is Settings gSet ? gSet.D : 5;
         int width = 0;
         int height = 0;
         int index = 0;
@@ -51,18 +51,17 @@ public class ZhaoKoch : StegoAlgorithm
         return count >= secretLength;
     }
 
-    public override byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null)
+    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings settings = null)
     {
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
             throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
-        _d = settings?.D ?? 5;
+        _d = settings is Settings gSet ? gSet.D : 5;
         BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength);
         return bits.ToByteArray();
-
     }
 
-    public override int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null)
+    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings settings = null)
     {
         BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
         byte[] bytes = lengthBits.ToByteArray();
