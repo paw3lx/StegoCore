@@ -1,0 +1,93 @@
+@page "/embed"
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+@inject IJSRuntime JS
+
+<div class="container">
+    <div class="row">
+        <InputFile OnChange="HandleSelected" accept=".jpg,.jpeg,.png,.bmp" />
+    </div>
+    <div class="row">
+            <div class="col-md">
+                @if (imageBase64 != null)
+                {
+                    <div>
+                        <img src="@imageBase64" />
+                    </div>
+                    <div class="d-flex justify-content-center mt-2">
+                        <input type="text" @bind="secret" id="secret" placeholder="Enter your secret" class="m-2" />
+                        <button class="btn btn-primary m-2" @onclick="Encrypt">Encrypt</button>
+                    </div>
+                    
+                }
+            </div>
+            <div class="col-md">
+                @if (imageEncrypted != null)
+                {
+                    <img src="@imageEncrypted" />
+                    <div class="d-flex justify-content-center mt-2">
+                        <button class="btn btn-primary" @onclick="Download">Download</button>
+                    </div>
+                }
+            </div>
+    </div>
+    
+</div>
+
+@code {
+    private string? imageBase64;
+    private byte[]? imageBytes;
+    private string? secret;
+    private byte[]? imageEncryptedBytes;
+    private string? imageEncrypted;
+
+
+    private async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            using MemoryStream ms = new();
+            var format = "image/png";
+            using var stream = imageFile.OpenReadStream();
+            await stream.CopyToAsync(ms);
+            imageBytes = ms.ToArray();
+            imageBase64 = $"data:{format};base64,{Convert.ToBase64String(imageBytes)}";
+        }
+    }
+
+    private async Task Encrypt()
+    {
+        if (secret is null || imageBytes is null)
+        {
+            return;
+        }
+
+        var secretData = System.Text.Encoding.UTF8.GetBytes(secret);
+        using (var stream = new MemoryStream(imageBytes))
+        {
+            using (var stego = new StegoCore.Stego(stream))
+            {
+                var imageWithSecret = stego.Embed(new StegoCore.Core.SecretData(secretData), StegoCore.Algorithms.AlgorithmEnum.Lsb);
+                using var outputStream = new MemoryStream();
+                await imageWithSecret.SaveAsync(outputStream, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                imageEncryptedBytes = outputStream.ToArray();
+                imageEncrypted = $"data:image/png;base64,{Convert.ToBase64String(imageEncryptedBytes)}";
+            }
+        }
+    }
+
+    private async Task Download()
+    {
+        if (imageEncryptedBytes is null)
+        {
+            return;
+        }
+
+        var stream = new MemoryStream(imageEncryptedBytes);
+
+        using var streamRef = new DotNetStreamReference(stream: stream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", "encrypted.png", streamRef);
+    }
+}

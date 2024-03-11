@@ -1,10 +1,11 @@
+---
 name: Lint Code
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 jobs:
   run-lint:
     runs-on: ubuntu-latest
@@ -12,13 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
 
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          FILTER_REGEX_EXCLUDE: .*tests/.*|.*\.csproj|.*\.sln
+          FILTER_REGEX_EXCLUDE: .*tests/.*|.*\.csproj|.*\.sln|.*examples/.*
           DEFAULT_BRANCH: "master"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 namespace StegoCore.Model;
 
-public class Settings
+public class Settings : ISettings
 {
     /// <summary>
     /// Parameter D for Zhao&Koch Algorithm

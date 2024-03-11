@@ -1,0 +1,70 @@
+@page "/decode"
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="container">
+    <div class="row">
+        <InputFile OnChange="HandleSelected" accept=".jpg,.jpeg,.png,.bmp" />
+    </div>
+    <div class="row">
+        <div class="col-md">
+            @if (imageBase64 != null)
+            {
+                <div>
+                    <img src="@imageBase64" />
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-primary" @onclick="Decrypt">Decrypt</button>
+                </div>
+
+            }
+        </div>
+        <div class="col-md">
+            <div class="h-100 d-flex flex-column align-items-center justify-content-center">
+                @if (secret != null)
+                {
+                    <div>
+                        <p>Your secret</p>
+                    </div>
+                    <input class="form-control" type="text" value="@secret" readonly>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private string? imageBase64;
+    private byte[]? imageBytes;
+
+    private string? secret;
+
+    private async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            using MemoryStream ms = new();
+            using var stream = imageFile.OpenReadStream();
+            await stream.CopyToAsync(ms);
+            imageBytes = ms.ToArray();
+            imageBase64 = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+        }
+    }
+
+    private void Decrypt()
+    {
+        if (imageBytes == null)
+        {
+            return;
+        }
+
+        using var stream = new MemoryStream(imageBytes);
+        using var stego = new StegoCore.Stego(stream);
+        var result = stego.Decode(StegoCore.Algorithms.AlgorithmEnum.Lsb);
+
+        // convert result to string
+        secret = System.Text.Encoding.UTF8.GetString(result);
+    }
+}

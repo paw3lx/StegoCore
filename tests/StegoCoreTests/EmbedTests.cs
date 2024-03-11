@@ -1,6 +1,7 @@
 using SixLabors.ImageSharp;
 using StegoCore;
 using StegoCore.Algorithms;
+using StegoCore.Core;
 using Xunit;
 
 namespace StegoCoreTests;
@@ -15,10 +16,13 @@ public class EmbedTests
         byte[] resultBytes = null;
         using (var stego = new Stego(FileHelper.GetPathToImage()))
         {
-            stego.SetSecretData(fileBytes);
-            var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
+            var settings = new StegoCore.Model.Settings
+            {
+                Key = "aaa"
+            };
+            var imageWithSecret = stego.Embed(new SecretData(fileBytes), AlgorithmEnum.Lsb, settings);
             stego.SetImage(imageWithSecret);
-            resultBytes = stego.Decode(AlgorithmEnum.Lsb);
+            resultBytes = stego.Decode(AlgorithmEnum.Lsb, settings);
         }
         Assert.Equal(fileBytes, resultBytes);
     }

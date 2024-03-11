@@ -13,16 +13,16 @@ namespace StegoCore.Algorithms;
 
 public class Lsb : StegoAlgorithm
 {
-    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null)
+    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings settings = null)
     {
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
             throw new InvalidDataException("Secret data is to big for embending.");
         Random random = GetRandomGenenator(settings);
         int index = 0;
+        HashSet<Tuple<int, int>> occupied = new();
         while (index < secretBits.Length)
         {
-            List<Tuple<int, int>> occupied = new List<Tuple<int, int>>();
             int width = random.Next(baseImage.Width);
             int height = random.Next(baseImage.Height);
             var pair = new Tuple<int, int>(width, height);
@@ -39,7 +39,7 @@ public class Lsb : StegoAlgorithm
         return baseImage;
     }
 
-    public override byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null)
+    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings settings = null)
     {
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
@@ -48,7 +48,7 @@ public class Lsb : StegoAlgorithm
         return bits.ToByteArray();
     }
 
-    public override int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null)
+    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings settings = null)
     {
         BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength, settings?.Key);
         byte[] bytes = lengthBits.ToByteArray();

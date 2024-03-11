@@ -94,16 +94,13 @@ public class AlgorithmTests : IDisposable
         var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
         using (var stego = new Stego(FileHelper.GetPathToImage()))
         {
-            stego.SetSecretData(fileBytes);
-            stego.SetSettings(new StegoCore.Model.Settings
+            var imageWithSecret = stego.Embed(new SecretData(fileBytes), AlgorithmEnum.Lsb, new StegoCore.Model.Settings
             {
                 Key = "aaa"
             });
-            var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
             stego.SetImage(imageWithSecret);
-            stego.SetSettings(null);
 
-            DecodeException ex = Assert.Throws<DecodeException>(() => { stego.Decode(AlgorithmEnum.Lsb); });
+            DecodeException ex = Assert.Throws<DecodeException>(() => { stego.Decode(AlgorithmEnum.Lsb, null); });
         }
     }
 
@@ -113,14 +110,13 @@ public class AlgorithmTests : IDisposable
         var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
         using (var stego = new Stego(FileHelper.GetPathToImage()))
         {
-            stego.SetSecretData(fileBytes);
-            stego.SetSettings(new StegoCore.Model.Settings
+            var settings = new StegoCore.Model.Settings
             {
                 Key = "aaa"
-            });
-            var imageWithSecret = stego.Embed(AlgorithmEnum.Lsb);
+            };
+            var imageWithSecret = stego.Embed(new SecretData(fileBytes), AlgorithmEnum.Lsb,settings );
             stego.SetImage(imageWithSecret);
-            byte[] resultSecret = stego.Decode(AlgorithmEnum.Lsb);
+            byte[] resultSecret = stego.Decode(AlgorithmEnum.Lsb, settings);
 
             Assert.Equal(fileBytes, resultSecret);
         }

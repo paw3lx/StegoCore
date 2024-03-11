@@ -16,7 +16,7 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     /// <param name="stegoImage"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    public abstract byte[] Decode(Image<Rgba32> stegoImage, Settings settings = null);
+    public abstract byte[] Decode(Image<Rgba32> stegoImage, ISettings settings = null);
 
     /// <summary>
     ///
@@ -25,7 +25,7 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     /// <param name="secret"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    public abstract Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, Settings settings = null);
+    public abstract Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings settings = null);
 
     /// <summary>
     /// Checks if embed is possible
@@ -41,9 +41,9 @@ public abstract class StegoAlgorithm : IStegoAlgorithm
     /// <param name="stegoImage">Image with emended message</param>
     /// <param name="settings"></param>
     /// <returns>secret length</returns>
-    public abstract int ReadSecretLength(Image<Rgba32> stegoImage, Settings settings = null);
+    public abstract int ReadSecretLength(Image<Rgba32> stegoImage, ISettings settings = null);
 
-    internal static Random GetRandomGenenator(Settings settings)
+    internal static Random GetRandomGenenator(ISettings settings)
     {
         return GetRandomGenenator(settings?.Key);
     }

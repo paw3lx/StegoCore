@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoCoreLib", "src\StegoCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoCoreTests", "tests\StegoCoreTests\StegoCoreTests.csproj", "{76150ECC-C19E-4694-86DB-B3E52C5A9D75}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{BE606BAA-E6C7-4A2C-907A-79305D0F2A70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoBlazorApp", "examples\StegoBlazorApp\StegoBlazorApp.csproj", "{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +25,15 @@ Global
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76150ECC-C19E-4694-86DB-B3E52C5A9D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BF7BFBF6-0C41-453C-AE8C-3F3A0752AF25} = {BE606BAA-E6C7-4A2C-907A-79305D0F2A70}
 	EndGlobalSection
 EndGlobal
