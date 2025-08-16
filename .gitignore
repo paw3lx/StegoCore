@@ -242,3 +242,6 @@ _Pvt_Extensions
 
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts/
+
+# NuGet config with API keys
+nuget.config

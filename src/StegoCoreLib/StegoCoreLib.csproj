@@ -4,19 +4,22 @@
     <AssemblyName>StegoCore</AssemblyName>
     <OutputType>Library</OutputType>
     <PackageId>StegoCore</PackageId>
-    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
     <RootNamespace>StegoCore</RootNamespace>
-    <VersionPrefix>0.3.1</VersionPrefix>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>Pawel Skaruz</Authors>
     <Company>BetaSoft</Company>
-    <Description>Steganography library for .NET Core</Description>
+    <Description>High-performance steganography library for .NET 8. Includes optimized LSB and ZhaoKoch algorithms with significant performance improvements and comprehensive benchmarking support.</Description>
+    <PackageReleaseNotes>v1.0.0: Major upgrade to .NET 8 with 4.6x performance improvements in LSB algorithm, updated ImageSharp to 3.1.11, added benchmarking infrastructure, and enhanced nullable reference types support.</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>Steganography Core</PackageTags>
     <Product>StegoCore</Product>
     <PackageProjectUrl>https://github.com/paw3lx/StegoCore</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/paw3lx/StegoCore</RepositoryUrl>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
