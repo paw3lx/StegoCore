@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.Collections;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Core;
@@ -13,7 +11,7 @@ namespace StegoCore.Algorithms;
 public class ZhaoKoch : StegoAlgorithm
 {
     private int _d;
-    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings settings = null)
+    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings? settings = null)
     {
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
@@ -51,7 +49,7 @@ public class ZhaoKoch : StegoAlgorithm
         return count >= secretLength;
     }
 
-    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings settings = null)
+    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings? settings = null)
     {
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
@@ -61,7 +59,7 @@ public class ZhaoKoch : StegoAlgorithm
         return bits.ToByteArray();
     }
 
-    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings settings = null)
+    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings? settings = null)
     {
         BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength);
         byte[] bytes = lengthBits.ToByteArray();

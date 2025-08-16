@@ -13,7 +13,7 @@ public class EmbedTests
     {
         var image = Image.Load(FileHelper.GetPathToImage());
         var fileBytes = System.IO.File.ReadAllBytes(FileHelper.GetPathToSecretData());
-        byte[] resultBytes = null;
+        byte[]? resultBytes = null;
         using (var stego = new Stego(FileHelper.GetPathToImage()))
         {
             var settings = new StegoCore.Model.Settings
