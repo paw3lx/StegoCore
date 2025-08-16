@@ -76,14 +76,15 @@ public class Lsb : StegoAlgorithm
             if (occupied.Contains(pair))
                 continue;
             occupied.Add(pair);
-            
+
             if (index < start)
             {
                 index += 2;
                 continue;
             }
 
-            stegoImage.ProcessPixelRows(accessor => {
+            stegoImage.ProcessPixelRows(accessor =>
+            {
                 Span<Rgba32> rowSpan = accessor.GetRowSpan(height);
                 Rgba32 pixel = rowSpan[width];
                 (bool bitR, bool bitB) = GetBitsFromPixel(pixel);
