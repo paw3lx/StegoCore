@@ -13,7 +13,7 @@ namespace StegoCore.Algorithms;
 
 public class Lsb : StegoAlgorithm
 {
-    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings settings = null)
+    public override Image<Rgba32> Embed(Image<Rgba32> baseImage, SecretData secret, ISettings? settings = null)
     {
         BitArray secretBits = secret.SecretWithLengthBits;
         if (IsEmbedPossible(baseImage, secretBits.Length) == false)
@@ -21,25 +21,31 @@ public class Lsb : StegoAlgorithm
         Random random = GetRandomGenenator(settings);
         int index = 0;
         HashSet<Tuple<int, int>> occupied = new();
-        while (index < secretBits.Length)
+
+        baseImage.ProcessPixelRows(accessor =>
         {
-            int width = random.Next(baseImage.Width);
-            int height = random.Next(baseImage.Height);
-            var pair = new Tuple<int, int>(width, height);
-            if (occupied.Contains(pair))
-                continue;
-            occupied.Add(pair);
-            Rgba32 pixel = baseImage[width, height];
-            pixel.R = SetLsb(pixel.R, secretBits[index]);
-            pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
-            baseImage[width, height] = pixel;
-            index += 2;
-        }
+            while (index < secretBits.Length)
+            {
+                int width = random.Next(baseImage.Width);
+                int height = random.Next(baseImage.Height);
+                var pair = new Tuple<int, int>(width, height);
+                if (occupied.Contains(pair))
+                    continue;
+                occupied.Add(pair);
+
+                // set pixel
+                Span<Rgba32> rowSpan = accessor.GetRowSpan(height);
+                ref Rgba32 pixel = ref rowSpan[width];
+                pixel.R = SetLsb(pixel.R, secretBits[index]);
+                pixel.B = SetLsb(pixel.B, secretBits[index + 1]);
+                index += 2;
+            }
+        });
 
         return baseImage;
     }
 
-    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings settings = null)
+    public override byte[] Decode(Image<Rgba32> stegoImage, ISettings? settings = null)
     {
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
@@ -48,7 +54,7 @@ public class Lsb : StegoAlgorithm
         return bits.ToByteArray();
     }
 
-    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings settings = null)
+    public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings? settings = null)
     {
         BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength, settings?.Key);
         byte[] bytes = lengthBits.ToByteArray();
@@ -56,15 +62,15 @@ public class Lsb : StegoAlgorithm
         return length;
     }
 
-    private BitArray ReadBits(Image<Rgba32> stegoImage, int start, int end, string key)
+    private static BitArray ReadBits(Image<Rgba32> stegoImage, int start, int end, string? key)
     {
         int length = end - start;
         if (length <= 0)
             throw new InvalidDataException("end has to be > than start");
-        BitArray bits = new BitArray(length);
+        BitArray bits = new(length);
         int index = 0;
         Random random = GetRandomGenenator(key);
-        List<Tuple<int, int>> occupied = new();
+        HashSet<Tuple<int, int>> occupied = new();
         while (index < end)
         {
             int width = random.Next(stegoImage.Width);
@@ -73,22 +79,27 @@ public class Lsb : StegoAlgorithm
             if (occupied.Contains(pair))
                 continue;
             occupied.Add(pair);
+            
             if (index < start)
             {
                 index += 2;
                 continue;
             }
-            Rgba32 pixel = stegoImage[width, height];
-            (bool bitR, bool bitB) = GetBitsFromPixel(pixel);
-            bits.Set(index - start, bitR);
-            bits.Set(index - start + 1, bitB);
-            index += 2;
+
+            stegoImage.ProcessPixelRows(accessor => {
+                Span<Rgba32> rowSpan = accessor.GetRowSpan(height);
+                Rgba32 pixel = rowSpan[width];
+                (bool bitR, bool bitB) = GetBitsFromPixel(pixel);
+                bits.Set(index - start, bitR);
+                bits.Set(index - start + 1, bitB);
+                index += 2;
+            });
         }
         return bits;
 
     }
 
-    private (bool R, bool B) GetBitsFromPixel(Rgba32 pixel)
+    private static (bool R, bool B) GetBitsFromPixel(Rgba32 pixel)
     {
         byte r = pixel.R;
         byte b = pixel.B;
@@ -104,12 +115,10 @@ public class Lsb : StegoAlgorithm
 
     private static byte SetLsb(byte b, bool value)
     {
-        byte ret;
         if (value)
-            ret = (byte)(b | 1);     // Make LSB 1
+            return unchecked((byte)(b | 0x01)); // Make LSB 1
         else
-            ret = (byte)(b & 254);   // Make LSB 0
-        return ret;
+            return unchecked((byte)(b & 0xFE)); // Make LSB 0
     }
 
     public override bool IsEmbedPossible(Image<Rgba32> image, int secretLength)

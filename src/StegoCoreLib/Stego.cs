@@ -58,7 +58,7 @@ public class Stego : StegoEntry
     /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
     /// <exception cref="StegoCore.Exceptions.DataToBigException">Thrown if the secred data is to big for embending</exception>
     /// <returns>Image with embeded secret data</returns>
-    public Image<Rgba32> Embed(SecretData secretData, AlgorithmEnum algorithm, ISettings settings = null)
+    public Image<Rgba32> Embed(SecretData secretData, AlgorithmEnum algorithm, ISettings? settings = null)
     {
         if (image == null)
             throw new System.NullReferenceException("Image cannot be null");
@@ -76,7 +76,7 @@ public class Stego : StegoEntry
     /// <exception cref="System.InvalidOperationException">TThrown if the <paramref name="algorithm"/> does not inherit from StegoAlgorithm.</exception>
     /// <exception cref="StegoCore.Exceptions.DecodeException">Thrown if error while decoding occurs</exception>
     /// <returns>Bytes of decoded secred data</returns>
-    public byte[] Decode(AlgorithmEnum algorithm, ISettings settings = null)
+    public byte[] Decode(AlgorithmEnum algorithm, ISettings? settings = null)
     {
         if (image == null)
             throw new System.NullReferenceException("Image cannot be null");

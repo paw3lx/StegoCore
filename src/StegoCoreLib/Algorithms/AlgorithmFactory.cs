@@ -1,6 +1,3 @@
-using System;
-using System.Reflection;
-
 namespace StegoCore.Algorithms;
 
 public static class AlgorithmFactory
@@ -16,10 +13,10 @@ public static class AlgorithmFactory
 
         if (!typeof(StegoAlgorithm).IsAssignableFrom(type))
         {
-            throw new InvalidOperationException(type.Name + " does not inherit from StegoAlghorithm");
+            throw new InvalidOperationException(type.Name + " does not inherit from StegoAlgorithm");
         }
 
-        return (StegoAlgorithm)Activator.CreateInstance(type);
+        return (StegoAlgorithm)Activator.CreateInstance(type)!;
     }
 
 }

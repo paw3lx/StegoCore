@@ -239,3 +239,6 @@ _Pvt_Extensions
 .idea/
 
 .DS_Store
+
+# BenchmarkDotNet artifacts
+BenchmarkDotNet.Artifacts/
