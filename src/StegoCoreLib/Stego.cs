@@ -1,9 +1,7 @@
-using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Algorithms;
 using StegoCore.Core;
-using StegoCore.Model;
 
 namespace StegoCore;
 

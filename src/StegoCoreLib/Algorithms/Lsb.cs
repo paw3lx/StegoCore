@@ -1,13 +1,10 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Core;
 using StegoCore.Exceptions;
 using StegoCore.Extensions;
-using StegoCore.Model;
 
 namespace StegoCore.Algorithms;
 
@@ -20,7 +17,7 @@ public class Lsb : StegoAlgorithm
             throw new InvalidDataException("Secret data is to big for embending.");
         Random random = GetRandomGenenator(settings);
         int index = 0;
-        HashSet<Tuple<int, int>> occupied = new();
+        HashSet<Tuple<int, int>> occupied = [];
 
         baseImage.ProcessPixelRows(accessor =>
         {
@@ -50,13 +47,13 @@ public class Lsb : StegoAlgorithm
         int length = ReadSecretLength(stegoImage, settings) * 8;
         if (length <= 0 || !IsEmbedPossible(stegoImage, length))
             throw new DecodeException($"Cannot read secret from this image file. Readed secret length: {length}");
-        BitArray bits = ReadBits(stegoImage, this.SecretDataLength, length + this.SecretDataLength, settings?.Key);
+        BitArray bits = ReadBits(stegoImage, SecretDataLength, length + SecretDataLength, settings?.Key);
         return bits.ToByteArray();
     }
 
     public override int ReadSecretLength(Image<Rgba32> stegoImage, ISettings? settings = null)
     {
-        BitArray lengthBits = ReadBits(stegoImage, 0, this.SecretDataLength, settings?.Key);
+        BitArray lengthBits = ReadBits(stegoImage, 0, SecretDataLength, settings?.Key);
         byte[] bytes = lengthBits.ToByteArray();
         int length = BitConverter.ToInt32(bytes, 0);
         return length;
@@ -70,7 +67,7 @@ public class Lsb : StegoAlgorithm
         BitArray bits = new(length);
         int index = 0;
         Random random = GetRandomGenenator(key);
-        HashSet<Tuple<int, int>> occupied = new();
+        HashSet<Tuple<int, int>> occupied = [];
         while (index < end)
         {
             int width = random.Next(stegoImage.Width);

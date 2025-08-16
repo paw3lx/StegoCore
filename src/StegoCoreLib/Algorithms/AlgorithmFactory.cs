@@ -6,7 +6,7 @@ public static class AlgorithmFactory
     {
         var type = Type.GetType(typeof(StegoAlgorithm).Namespace + "." + selection.ToString(), throwOnError: false);
 
-        if (type == null)
+        if (type is null)
         {
             throw new NullReferenceException(selection.ToString() + " is not a known algorithm type");
         }

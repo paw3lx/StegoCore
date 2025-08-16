@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.Collections;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using StegoCore.Core;
