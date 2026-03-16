@@ -1,8 +1,9 @@
+using System;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using StegoCore.Extensions;
-using StegoCore.Model;
+using StegoCore.Validation;
+using StegoCore.Exceptions;
 
 namespace StegoCore.Core;
 
@@ -14,17 +15,45 @@ public abstract class StegoEntry : IStegoEntry
 
     public StegoEntry(Stream imageStream)
     {
-        image = Image.Load<Rgba32>(imageStream);
+        ArgumentValidator.ValidateImageStream(imageStream, nameof(imageStream));
+        
+        try
+        {
+            image = Image.Load<Rgba32>(imageStream);
+        }
+        catch (Exception ex) when (ex is not ArgumentException && ex is not ArgumentNullException)
+        {
+            throw new UnsupportedImageFormatException("Failed to load image from stream. The format may not be supported.", null, ex);
+        }
     }
 
     public StegoEntry(string imagePath)
     {
-        image = Image.Load<Rgba32>(imagePath);
+        ArgumentValidator.ValidateImageFilePath(imagePath, nameof(imagePath));
+        
+        try
+        {
+            image = Image.Load<Rgba32>(imagePath);
+        }
+        catch (Exception ex) when (ex is not ArgumentException && ex is not ArgumentNullException && ex is not FileNotFoundException)
+        {
+            string extension = Path.GetExtension(imagePath);
+            throw new UnsupportedImageFormatException($"Failed to load image from file '{imagePath}'. The format '{extension}' may not be supported.", extension, ex);
+        }
     }
 
     public StegoEntry(byte[] imageBytes)
     {
-        image = Image.Load<Rgba32>(imageBytes);
+        ArgumentValidator.ValidateImageBytes(imageBytes, nameof(imageBytes));
+        
+        try
+        {
+            image = Image.Load<Rgba32>(imageBytes);
+        }
+        catch (Exception ex) when (ex is not ArgumentException && ex is not ArgumentNullException)
+        {
+            throw new UnsupportedImageFormatException("Failed to load image from byte array. The format may not be supported.", null, ex);
+        }
     }
 
     // protected void LoadSecretData(string filePath)
@@ -52,5 +81,9 @@ public abstract class StegoEntry : IStegoEntry
         }
     }
 
-    public void Dispose() => Dispose(true);
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 }
